@@ -4,4 +4,6 @@ script: coverage run test.py
 
 install: pip install -r requirements.txt
 
+env: CODECOV_TOKEN=<493d7e14-6c3c-4e10-87fe-04fff4e6d73c>
+
 after_success: bash <(curl -s https://codecov.io/bash)
