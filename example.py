@@ -36,7 +36,6 @@ chi_step = ChiSqSelectionStep()
 
 # Make Pipeline
 pipeline_steps = [scale_step, abod_step, corr_step]
-pipeline_steps = [chi_step]
 pipeline = Pipeline(pipeline_steps)
 
 # Transform data sets
