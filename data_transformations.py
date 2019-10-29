@@ -5,14 +5,14 @@ import pandas as pd
 import numpy as np
 
 # Internal Imports
-from data_pipeline.data_managing import split_X_y
-from data_pipeline.errors import Transform_Error
+from DS_Pipeline.data_managing import split_X_y
+from DS_Pipeline.errors import Transform_Error
 
 ################################################################################################
 # SCALE DATA
 ################################################################################################
 
-class Standard_Scaler_p():
+class Standard_Scaler_Step():
     def __init__(self, kwargs={}):
         self.description = "Standard Scaler"
         self.kwargs = kwargs
@@ -49,7 +49,7 @@ class Standard_Scaler_p():
 ################################################################################################
 # Principal Component Analysis with or without appending principal components to original data
 
-class PCA_p():
+class PCA_Step():
     def __init__(self, append_data=False, kwargs={}):
         self.description = 'PCA'
         self.kwargs = kwargs
@@ -98,7 +98,7 @@ class PCA_p():
 ################################################################################################
 # Generates interaction terms and polynomials with or without appending to original data
 
-class Poly_p():
+class Poly_Step():
 
     def __init__(self, append_data=False, kwargs={}):
         self.description = 'Polynomial Features'
@@ -144,7 +144,7 @@ class Poly_p():
 # Takes the sine of every value in the given columns. If no columns given then the sine of
 # every column is taken
  
-class Sin_p():
+class Sin_Step():
     def __init__(self, append_data=False, columns=None):
         self.description = "Sine"
         self.columns = columns

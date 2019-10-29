@@ -6,15 +6,15 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
 
 # Internal Imports
-from data_pipeline.data_managing import split_X_y
-from data_pipeline.errors import Transform_Error
+from DS_Pipeline.data_managing import split_X_y
+from DS_Pipeline.errors import Transform_Error
 
 ################################################################################################
 ## LIST FEATURE SELECTION
 ################################################################################################
 # Selects based on the given list of features
 
-class List_Selection():
+class List_Selection_Step():
     def __init__(self, features):
         self.description = 'Select features: ' + str(features)
         self.features = features
@@ -42,7 +42,7 @@ class List_Selection():
 ## REGRESSION FOREST FEATURE SELECTION
 ################################################################################################
 
-class Regression_Tree_Selection_p():
+class Regression_Tree_Selection_Step():
     def __init__(self, tree_kwargs={'n_estimators':100}, select_kwargs={}):
         self.description = 'Regression Tree Forest Feature Selection'
         self.tree_kwargs = tree_kwargs
@@ -85,7 +85,7 @@ class Regression_Tree_Selection_p():
 # PEARSON CORRELATION FEATURE SELECTION
 ################################################################################################
 
-class Pearson_Corr_p():
+class Pearson_Corr_Step():
     def __init__(self, threshold):
         self.description = "Pearson Correlation Feature Selection"
         self.threshold = threshold
@@ -112,7 +112,7 @@ class Pearson_Corr_p():
 ################################################################################################
 # CHI SQUARED FEATURE SELECTION
 ################################################################################################
-class Chi_Selection_p():
+class Chi_Selection_Step():
     def __init__(self, select_kwargs={}):
         self.description = "Chi Squared Feature Selection"
         self.select_kwargs = select_kwargs
@@ -141,7 +141,7 @@ class Chi_Selection_p():
 # LASSO FEATURE SELECTION
 ################################################################################################
 
-class Lasso_Selection_p():
+class Lasso_Selection_Step():
     def __init__(self, lasso_kwargs={}, select_kwargs={}):
         self.description = "Lasso Feature Selection"
         lasso_kwargs['penalty'] = "l1"

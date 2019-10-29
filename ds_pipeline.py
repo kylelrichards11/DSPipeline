@@ -7,7 +7,7 @@
 ################################################################################################
 # Runs a pipeline with given steps
 
-class Data_Pipeline():
+class DS_Pipeline():
     def __init__(self, steps):
         self.steps = steps
 
@@ -35,7 +35,7 @@ class Data_Pipeline():
 
 ################################################################################################
 # An empty step to do nothing with the data
-class Empty_Step_p():
+class Empty_Step():
     def __init__(self):
         self.description = "Empty Step"
         self.test_data = True
