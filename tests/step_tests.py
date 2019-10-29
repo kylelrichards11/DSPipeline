@@ -3,7 +3,7 @@ import unittest
 import pandas as pd
 
 # Internal Imports
-from .utils import rand_df
+from .utils import rand_df, rand_df_classification
 
 ################################################################################################
 # STEP CLASS TESTER
@@ -30,7 +30,11 @@ class StepTest(object):
     def test_step(self):
 
         # Test train data fit transform
-        train_data = rand_df()
+        if self.regression == True:
+            train_data = rand_df()
+        else:
+            train_data = rand_df_classification()
+            
         self.step.fit(train_data)
         new_train = self.step.transform(train_data)
         self.assertTrue(type(new_train) == pd.DataFrame)

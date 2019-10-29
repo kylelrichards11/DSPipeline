@@ -10,12 +10,16 @@ from tests.step_tests import StepTest
 ################################################################################################
 class PCATests(unittest.TestCase, StepTest):
     step = PCAStep()
+    regression = True
 
 class PolyTests(unittest.TestCase, StepTest):
     step = PolyStep()
+    regression = True
 
 class SinTests(unittest.TestCase, StepTest):
     step = SinStep()
+    regression = True
 
 class StandardScalerTests(unittest.TestCase, StepTest):
     step = StandardScalerStep()
+    regression = True
