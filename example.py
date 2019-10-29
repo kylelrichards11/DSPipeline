@@ -1,9 +1,9 @@
 # DSPipeline Imports
 from DSPipeline.ds_pipeline import Pipeline
-from DSPipeline.data_transformations import Standard_Scaler_Step
-from DSPipeline.feature_selection import Pearson_Corr_Step
-from DSPipeline.data_managing import split_X_y
-from DSPipeline.outlier_detection import ABOD_Step
+from DSPipeline.data_transformations import StandardScalerStep
+from DSPipeline.feature_selection import PearsonCorrStep
+from DSPipeline.data_managing import split_x_y
+from DSPipeline.outlier_detection import ABODStep
 
 # Other Imports
 import numpy as np
@@ -26,12 +26,12 @@ data = pd.concat((X_data, y_data), axis=1)
 train, test = train_test_split(data)
 train = train.reset_index(drop=True)
 test = test.reset_index(drop=True)
-test_X, test_y = split_X_y(test, y_label=y_label)
+test_X, test_y = split_x_y(test, y_label=y_label)
 
 # Create Steps
-scale_step = Standard_Scaler_Step()
-abod_step = ABOD_Step(num_remove=5, kwargs={'contamination':0.05})
-corr_step = Pearson_Corr_Step(threshold=0.25)
+scale_step = StandardScalerStep()
+ABODStep = ABODStep(num_remove=5, kwargs={'contamination':0.05})
+corr_step = PearsonCorrStep(threshold=0.25)
 
 # Make Pipeline
 pipeline_steps = [scale_step, corr_step]
@@ -42,7 +42,7 @@ train_transformed = pipeline.fit_transform(train, y_label=y_label)
 test_X_transformed = pipeline.transform(test_X, allow_sample_removal=False)
 
 # Use data to make predictions
-train_X, train_y = split_X_y(train_transformed, y_label=y_label)
+train_X, train_y = split_x_y(train_transformed, y_label=y_label)
 model = LinearRegression()
 model.fit(train_X, train_y)
 y_hat = model.predict(test_X_transformed)

@@ -6,7 +6,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
 
 # Internal Imports
-from .data_managing import split_X_y
+from .data_managing import split_x_y
 from .errors import Transform_Error
 
 ################################################################################################
@@ -14,7 +14,7 @@ from .errors import Transform_Error
 ################################################################################################
 # Selects based on the given list of features
 
-class List_Selection_Step():
+class ListSelectionStep():
     def __init__(self, features):
         self.description = 'Select features: ' + str(features)
         self.features = features
@@ -42,7 +42,7 @@ class List_Selection_Step():
 ## REGRESSION FOREST FEATURE SELECTION
 ################################################################################################
 
-class Regression_Tree_Selection_Step():
+class RegTreeSelectionStep():
     def __init__(self, tree_kwargs={'n_estimators':100}, select_kwargs={}):
         self.description = 'Regression Tree Forest Feature Selection'
         self.tree_kwargs = tree_kwargs
@@ -55,7 +55,7 @@ class Regression_Tree_Selection_Step():
         reg_forest_fitter = SelectFromModel(reg_forest, **self.select_kwargs)
 
         cols = data.columns
-        X_data, y_data = split_X_y(data, y_label=y_label)
+        X_data, y_data = split_x_y(data, y_label=y_label)
 
         reg_forest_fitter.fit(X_data, y_data)
 
@@ -71,7 +71,7 @@ class Regression_Tree_Selection_Step():
             raise Transform_Error
 
         if y_label in data.columns:
-            X_data, y_data = split_X_y(data, y_label=y_label)
+            X_data, y_data = split_x_y(data, y_label=y_label)
         else:
             X_data = data
             y_data = None
@@ -85,7 +85,7 @@ class Regression_Tree_Selection_Step():
 # PEARSON CORRELATION FEATURE SELECTION
 ################################################################################################
 
-class Pearson_Corr_Step():
+class PearsonCorrStep():
     def __init__(self, threshold):
         self.description = "Pearson Correlation Feature Selection"
         self.threshold = threshold
@@ -112,7 +112,7 @@ class Pearson_Corr_Step():
 ################################################################################################
 # CHI SQUARED FEATURE SELECTION
 ################################################################################################
-class Chi_Squared_Selection_Step():
+class ChiSqSelectionStep():
     def __init__(self, select_kwargs={}):
         self.description = "Chi Squared Feature Selection"
         self.select_kwargs = select_kwargs
@@ -120,7 +120,7 @@ class Chi_Squared_Selection_Step():
         self.removes_samples = False
 
     def fit(self, data, y_label='label'):
-        X_data, y_data = split_X_y(data, y_label=y_label)
+        X_data, y_data = split_x_y(data, y_label=y_label)
         X_norm = MinMaxScaler().fit(X_data)
         chi_selector = SelectKBest(chi2, **self.select_kwargs)
         chi_selector.fit(X_norm, y_data)
@@ -141,7 +141,7 @@ class Chi_Squared_Selection_Step():
 # LASSO FEATURE SELECTION
 ################################################################################################
 
-class Lasso_Selection_Step():
+class LassoSelectionStep():
     def __init__(self, lasso_kwargs={}, select_kwargs={}):
         self.description = "Lasso Feature Selection"
         lasso_kwargs['penalty'] = "l1"
@@ -151,7 +151,7 @@ class Lasso_Selection_Step():
         self.removes_samples = False
 
     def fit(self, data, y_label='label'):
-        X_data, y_data = split_X_y(data, y_label=y_label)
+        X_data, y_data = split_x_y(data, y_label=y_label)
 
         embeded_lr_selector = SelectFromModel(LogisticRegression(**self.lasso_kwargs), **self.select_kwargs)
         embeded_lr_selector.fit(X_data, y_data)

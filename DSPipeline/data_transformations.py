@@ -5,14 +5,14 @@ import pandas as pd
 import numpy as np
 
 # Internal Imports
-from .data_managing import split_X_y
+from .data_managing import split_x_y
 from .errors import Transform_Error
 
 ################################################################################################
 # SCALE DATA
 ################################################################################################
 
-class Standard_Scaler_Step():
+class StandardScalerStep():
     def __init__(self, kwargs={}):
         self.description = "Standard Scaler"
         self.kwargs = kwargs
@@ -21,7 +21,7 @@ class Standard_Scaler_Step():
 
     def fit(self, data, y_label='label'):
         if y_label in data.columns:
-            X_data, y_data = split_X_y(data, y_label=y_label)
+            X_data, y_data = split_x_y(data, y_label=y_label)
         else:
             X_data = data
             y_data = None
@@ -34,7 +34,7 @@ class Standard_Scaler_Step():
             raise Transform_Error
 
         if y_label in data.columns:
-            X_data, y_data = split_X_y(data, y_label=y_label)
+            X_data, y_data = split_x_y(data, y_label=y_label)
         else:
             X_data = data
             y_data = None
@@ -49,7 +49,7 @@ class Standard_Scaler_Step():
 ################################################################################################
 # Principal Component Analysis with or without appending principal components to original data
 
-class PCA_Step():
+class PCAStep():
     def __init__(self, append_data=False, kwargs={}):
         self.description = 'PCA'
         self.kwargs = kwargs
@@ -60,7 +60,7 @@ class PCA_Step():
     def fit(self, data, y_label='label'):
 
         if y_label in data.columns:
-            X_data, y_data = split_X_y(data, y_label=y_label)
+            X_data, y_data = split_x_y(data, y_label=y_label)
         else:
             X_data = data
             y_data = None
@@ -74,7 +74,7 @@ class PCA_Step():
             raise Transform_Error
         
         if y_label in data.columns:
-            X_data, y_data = split_X_y(data, y_label=y_label)
+            X_data, y_data = split_x_y(data, y_label=y_label)
         else:
             X_data = data
             y_data = None
@@ -98,7 +98,7 @@ class PCA_Step():
 ################################################################################################
 # Generates interaction terms and polynomials with or without appending to original data
 
-class Poly_Step():
+class PolyStep():
 
     def __init__(self, append_data=False, kwargs={}):
         self.description = 'Polynomial Features'
@@ -110,7 +110,7 @@ class Poly_Step():
     def fit(self, data, y_label='label'):
 
         # Split data from labels (don't want interaction with labels)
-        X_data, _ = split_X_y(data, y_label=y_label)
+        X_data, _ = split_x_y(data, y_label=y_label)
 
         poly = PolynomialFeatures(**self.kwargs)
         self.fitted = poly.fit(X_data)
@@ -121,7 +121,7 @@ class Poly_Step():
             raise Transform_Error
 
         if y_label in data.columns:
-            X_data, y_data = split_X_y(data, y_label=y_label)
+            X_data, y_data = split_x_y(data, y_label=y_label)
         else:
             X_data = data
             y_data = None
@@ -144,7 +144,7 @@ class Poly_Step():
 # Takes the sine of every value in the given columns. If no columns given then the sine of
 # every column is taken
  
-class Sin_Step():
+class SinStep():
     def __init__(self, append_data=False, columns=None):
         self.description = "Sine"
         self.columns = columns

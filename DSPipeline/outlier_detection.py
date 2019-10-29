@@ -5,14 +5,14 @@ from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 
 # Internal Imports
-from .data_managing import split_X_y
+from .data_managing import split_x_y
 from .errors import Transform_Error
 
 ################################################################################################
 # ANGLE BASED OUTLIER DETECTION
 ################################################################################################
 
-class ABOD_Step():
+class ABODStep():
     def __init__(self, num_remove, kwargs={}):
         self.description = 'Angle Based Outlier Detection'
         self.num_remove = num_remove
@@ -39,7 +39,7 @@ class ABOD_Step():
 # ISOLATION FOREST
 ################################################################################################
 
-class Iso_Forest_Step():
+class IsoForestStep():
     def __init__(self, include_y=True, kwargs={}):
         self.description = "Isolation Forest Outlier Detection"
         self.include_y = include_y
@@ -52,7 +52,7 @@ class Iso_Forest_Step():
         if self.include_y:
             self.fitted = iso.fit(data)
         else:
-            X_data, _ = split_X_y(data, y_label=y_label)
+            X_data, _ = split_x_y(data, y_label=y_label)
             self.fitted = iso.fit(X_data)
         return data
 
@@ -63,7 +63,7 @@ class Iso_Forest_Step():
         if self.include_y:
             outlier_labels = self.fitted.predict(data)
         else:
-            X_data, _ = split_X_y(data, y_label=y_label)
+            X_data, _ = split_x_y(data, y_label=y_label)
             outlier_labels = self.fitted.predict(X_data)
 
         # Remove outliers from data
@@ -77,7 +77,7 @@ class Iso_Forest_Step():
 # LOCAL OUTLIER FACTOR
 ################################################################################################
 
-class LOF_Step():
+class LOFStep():
     def __init__(self, include_y=True, kwargs={}):
         self.description = "Local Outlier Factor"
         self.include_y = include_y
@@ -96,7 +96,7 @@ class LOF_Step():
         if self.include_y:
             outlier_labels = self.fitted.fit_predict(data)
         else:
-            X_data, _ = split_X_y(data, y_label=y_label)
+            X_data, _ = split_x_y(data, y_label=y_label)
             outlier_labels = self.fitted.fit_predict(X_data)
 
         # Remove outliers from data

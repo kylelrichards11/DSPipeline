@@ -32,7 +32,7 @@ class Pipeline():
 
 ################################################################################################
 # An empty step to do nothing with the data
-class Empty_Step():
+class EmptyStep():
     def __init__(self):
         self.description = "Empty Step"
         self.test_data = True
