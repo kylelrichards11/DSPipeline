@@ -46,11 +46,11 @@ test_X, test_y = split_x_y(test, y_label=y_label)
 
 # Create Steps
 scale_step = StandardScalerStep()
-ABODStep = ABODStep(num_remove=5, kwargs={'contamination':0.05})
+abod_step = ABODStep(num_remove=5, kwargs={'contamination':0.05})
 corr_step = PearsonCorrStep(threshold=0.25)
 
 # Make Pipeline
-pipeline_steps = [scale_step, corr_step]
+pipeline_steps = [scale_step, abod_step, corr_step]
 pipeline = Pipeline(pipeline_steps)
 
 # Transform data sets

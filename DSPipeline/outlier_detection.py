@@ -40,7 +40,7 @@ class ABODStep():
 ################################################################################################
 
 class IsoForestStep():
-    def __init__(self, include_y=True, kwargs={}):
+    def __init__(self, include_y=True, kwargs={'contamination': 'auto', 'behaviour': 'new'}):
         self.description = "Isolation Forest Outlier Detection"
         self.include_y = include_y
         self.kwargs = kwargs
@@ -78,7 +78,7 @@ class IsoForestStep():
 ################################################################################################
 
 class LOFStep():
-    def __init__(self, include_y=True, kwargs={}):
+    def __init__(self, include_y=True, kwargs={'contamination': 'auto'}):
         self.description = "Local Outlier Factor"
         self.include_y = include_y
         self.kwargs = kwargs

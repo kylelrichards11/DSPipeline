@@ -1,9 +1,10 @@
 # External Imports
 import pandas as pd
+import numpy as np
 from sklearn.feature_selection import SelectFromModel, SelectKBest, chi2
 from sklearn.ensemble import ExtraTreesRegressor
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.linear_model import LogisticRegression
+from sklearn.linear_model import Lasso
 
 # Internal Imports
 from .data_managing import split_x_y
@@ -25,12 +26,13 @@ class ListSelectionStep():
 
     def transform(self, data, y_label='label'):
         # Make sure we do not drop y
-        if y_label in data and y_label not in self.features:
-            self.features.append(y_label)
+        features = self.features.copy()
+        if (y_label in data.columns) and (y_label not in self.features):
+            features.append(y_label)
 
         # Try to keep features if they are there
         try:
-            return data[self.features]
+            return data[features]
         except KeyError:
             print("Could not fit features:")
             print(self.features)
@@ -121,7 +123,7 @@ class ChiSqSelectionStep():
 
     def fit(self, data, y_label='label'):
         X_data, y_data = split_x_y(data, y_label=y_label)
-        X_norm = MinMaxScaler().fit(X_data)
+        X_norm = pd.DataFrame(MinMaxScaler().fit_transform(X_data), columns=X_data.columns)
         chi_selector = SelectKBest(chi2, **self.select_kwargs)
         chi_selector.fit(X_norm, y_data)
         chi_support = chi_selector.get_support()
@@ -132,10 +134,11 @@ class ChiSqSelectionStep():
         if self.features is None:
             raise Transform_Error
 
+        features = self.features.copy()
         if y_label in data.columns:
-            self.features.append(y_label)
-            return data.loc[:, data.columns.isin(self.features)]
-        return data.loc[:, data.columns.isin(self.features)]
+            features.append(y_label)
+            return data.loc[:, data.columns.isin(features)]
+        return data.loc[:, data.columns.isin(features)]
 
 ################################################################################################
 # LASSO FEATURE SELECTION
@@ -144,7 +147,6 @@ class ChiSqSelectionStep():
 class LassoSelectionStep():
     def __init__(self, lasso_kwargs={}, select_kwargs={}):
         self.description = "Lasso Feature Selection"
-        lasso_kwargs['penalty'] = "l1"
         self.lasso_kwargs = lasso_kwargs
         self.select_kwargs = select_kwargs
         self.features = None
@@ -153,7 +155,7 @@ class LassoSelectionStep():
     def fit(self, data, y_label='label'):
         X_data, y_data = split_x_y(data, y_label=y_label)
 
-        embeded_lr_selector = SelectFromModel(LogisticRegression(**self.lasso_kwargs), **self.select_kwargs)
+        embeded_lr_selector = SelectFromModel(Lasso(**self.lasso_kwargs), **self.select_kwargs)
         embeded_lr_selector.fit(X_data, y_data)
 
         embeded_lr_support = embeded_lr_selector.get_support()

@@ -1,7 +1,7 @@
 # DSPipeline Imports
 from DSPipeline.ds_pipeline import Pipeline
 from DSPipeline.data_transformations import StandardScalerStep
-from DSPipeline.feature_selection import PearsonCorrStep
+from DSPipeline.feature_selection import PearsonCorrStep, ChiSqSelectionStep
 from DSPipeline.data_managing import split_x_y
 from DSPipeline.outlier_detection import ABODStep
 
@@ -32,9 +32,11 @@ test_X, test_y = split_x_y(test, y_label=y_label)
 scale_step = StandardScalerStep()
 abod_step = ABODStep(num_remove=5, kwargs={'contamination':0.05})
 corr_step = PearsonCorrStep(threshold=0.25)
+chi_step = ChiSqSelectionStep()
 
 # Make Pipeline
 pipeline_steps = [scale_step, abod_step, corr_step]
+pipeline_steps = [chi_step]
 pipeline = Pipeline(pipeline_steps)
 
 # Transform data sets
