@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/kylelrichards11/DSPipeline.svg?token=wqDVpwhQq3xYjNDgN9tk&branch=master)](https://travis-ci.com/kylelrichards11/DSPipeline)
+
 # Data Science Pipeline
 ## Overview
 This pacakge is inspired by `sklearn`'s `pipeline` [class](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html). It extends the capabilities to non-sklearn data manipulation methods. The package consists of `_Step` classes which are wrappers for the data transformation technique. Each `_Step` object is created with the arguments needed to apply the data transformation method. These `_Step` classes represent "remembering" the data transformation so that it can be applied to any given data set.
