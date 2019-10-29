@@ -18,12 +18,12 @@ class Abod_Step():
         self.num_remove = num_remove
         self.kwargs = kwargs
         self.fitted = None
-        self.test_data = False
+        self.removes_samples = True
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         abod = ABOD(**self.kwargs)
         self.fitted = abod.fit(data)
-        return self.transform(data, y_label=y_label)
+        return data
 
     def transform(self, data, y_label='label'):
         scores = pd.DataFrame(self.fitted.decision_scores_*-1, columns=['score'])
@@ -44,17 +44,17 @@ class Iso_Forest_Step():
         self.description = "Isolation Forest Outlier Detection"
         self.include_y = include_y
         self.kwargs = kwargs
-        self.test_data = False
+        self.removes_samples = True
         self.fitted = None
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         iso = IsolationForest(**self.kwargs)
         if self.include_y:
             self.fitted = iso.fit(data)
         else:
             X_data, _ = split_X_y(data, y_label=y_label)
             self.fitted = iso.fit(X_data)
-        return self.transform(data, y_label=y_label)
+        return data
 
     def transform(self, data, y_label='label'):
         if self.fitted is None:
@@ -83,11 +83,11 @@ class LOF_Step():
         self.include_y = include_y
         self.kwargs = kwargs
         self.fitted = None
-        self.test_data = False
+        self.removes_samples = True
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         self.fitted = LocalOutlierFactor(**self.kwargs)
-        return self.transform(data, y_label=y_label)
+        return data
 
     def transform(self, data, y_label='label'):
         if self.fitted is None:

@@ -17,9 +17,9 @@ class Standard_Scaler_Step():
         self.description = "Standard Scaler"
         self.kwargs = kwargs
         self.fitted = None
-        self.test_data = True
+        self.removes_samples = False
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         if y_label in data.columns:
             X_data, y_data = split_X_y(data, y_label=y_label)
         else:
@@ -55,9 +55,9 @@ class PCA_Step():
         self.kwargs = kwargs
         self.append_data = append_data
         self.fitted = None
-        self.test_data = True
+        self.removes_samples = False
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
 
         if y_label in data.columns:
             X_data, y_data = split_X_y(data, y_label=y_label)
@@ -105,9 +105,9 @@ class Poly_Step():
         self.kwargs = kwargs
         self.append_data = append_data
         self.fitted = None
-        self.test_data = True
+        self.removes_samples = False
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
 
         # Split data from labels (don't want interaction with labels)
         X_data, _ = split_X_y(data, y_label=y_label)
@@ -150,9 +150,9 @@ class Sin_Step():
         self.columns = columns
         self.append_data = append_data
         self.fitted = None
-        self.test_data = True
+        self.removes_samples = False
     
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         return self.transform(data, y_label=y_label)
 
     def transform(self, data, y_label='label'):

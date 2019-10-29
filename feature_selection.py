@@ -18,7 +18,7 @@ class List_Selection_Step():
     def __init__(self, features):
         self.description = 'Select features: ' + str(features)
         self.features = features
-        self.test_data = True
+        self.removes_samples = False
 
     def fit(self, data, y_label='label'):
         pass
@@ -47,10 +47,10 @@ class Regression_Tree_Selection_Step():
         self.description = 'Regression Tree Forest Feature Selection'
         self.tree_kwargs = tree_kwargs
         self.select_kwargs = select_kwargs
-        self.test_data = True
+        self.removes_samples = False
         self.features = None
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         reg_forest = ExtraTreesRegressor(**self.tree_kwargs)
         reg_forest_fitter = SelectFromModel(reg_forest, **self.select_kwargs)
 
@@ -90,13 +90,13 @@ class Pearson_Corr_Step():
         self.description = "Pearson Correlation Feature Selection"
         self.threshold = threshold
         self.features = None
-        self.test_data = True
+        self.removes_samples = False
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         corr = data.corr()
         corr_target = abs(corr[y_label])
         relevant_features = corr_target[corr_target > self.threshold]
-        self.features = relevant_features.drop(index='y')
+        self.features = relevant_features.drop(index=y_label)
         return self.transform(data, y_label=y_label)
 
     def transform(self, data, y_label='label'):
@@ -117,11 +117,11 @@ class Chi_Selection_Step():
         self.description = "Chi Squared Feature Selection"
         self.select_kwargs = select_kwargs
         self.features = None
-        self.test_data = True
+        self.removes_samples = False
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         X_data, y_data = split_X_y(data, y_label=y_label)
-        X_norm = MinMaxScaler().fit_transform(X_data)
+        X_norm = MinMaxScaler().fit(X_data)
         chi_selector = SelectKBest(chi2, **self.select_kwargs)
         chi_selector.fit(X_norm, y_data)
         chi_support = chi_selector.get_support()
@@ -148,9 +148,9 @@ class Lasso_Selection_Step():
         self.lasso_kwargs = lasso_kwargs
         self.select_kwargs = select_kwargs
         self.features = None
-        self.test_data = True
+        self.removes_samples = False
 
-    def fit_transform(self, data, y_label='label'):
+    def fit(self, data, y_label='label'):
         X_data, y_data = split_X_y(data, y_label=y_label)
 
         embeded_lr_selector = SelectFromModel(LogisticRegression(**self.lasso_kwargs), **self.select_kwargs)
