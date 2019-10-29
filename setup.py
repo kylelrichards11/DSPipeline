@@ -11,7 +11,7 @@ setuptools.setup(
     description="A package to create data pipelines",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/kylelrichards11/DS_Pipeline",
+    url="https://github.com/kylelrichards11/DSPipeline",
     packages=setuptools.find_packages(),
     classifiers=[
         "Programming Language :: Python :: 3",
