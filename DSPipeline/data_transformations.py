@@ -5,8 +5,8 @@ import pandas as pd
 import numpy as np
 
 # Internal Imports
-from DS_Pipeline.data_managing import split_X_y
-from DS_Pipeline.errors import Transform_Error
+from .data_managing import split_X_y
+from .errors import Transform_Error
 
 ################################################################################################
 # SCALE DATA

@@ -1,6 +1,6 @@
 # External Imports
-import numpy as np 
 import pandas as pd
+import numpy as np
 
 # Internal Imports
 

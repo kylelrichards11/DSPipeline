@@ -15,11 +15,11 @@ The constructor must contain all information that needs to be remembered to recr
 ## Example Use
 ```python
 # DS_Pipeline Imports
-from DS_Pipeline.ds_pipeline import DS_Pipeline
-from DS_Pipeline.outlier_detection import Abod_Step
-from DS_Pipeline.data_transformations import Standard_Scaler_Step
-from DS_Pipeline.feature_selection import Pearson_Corr_Step
-from DS_Pipeline.data_managing import split_X_y
+from DSPipeline.data_managing import split_X_y
+from DSPipeline.data_transformations import Standard_Scaler_Step
+from DSPipeline.outlier_detection import ABOD_Step
+from DSPipeline.feature_selection import Pearson_Corr_Step
+from DSPipeline.ds_pipeline import Pipeline
 
 # Other Imports
 import numpy as np
@@ -46,12 +46,12 @@ test_X, test_y = split_X_y(test, y_label=y_label)
 
 # Create Steps
 scale_step = Standard_Scaler_Step()
-abod_step = Abod_Step(num_remove=5, kwargs={'contamination':0.05})
+abod_step = ABOD_Step(num_remove=5, kwargs={'contamination':0.05})
 corr_step = Pearson_Corr_Step(threshold=0.25)
 
 # Make Pipeline
 pipeline_steps = [scale_step, corr_step]
-pipeline = DS_Pipeline(pipeline_steps)
+pipeline = Pipeline(pipeline_steps)
 
 # Transform data sets
 train_transformed = pipeline.fit_transform(train, y_label=y_label)

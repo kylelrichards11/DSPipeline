@@ -6,8 +6,8 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.linear_model import LogisticRegression
 
 # Internal Imports
-from DS_Pipeline.data_managing import split_X_y
-from DS_Pipeline.errors import Transform_Error
+from .data_managing import split_X_y
+from .errors import Transform_Error
 
 ################################################################################################
 ## LIST FEATURE SELECTION
@@ -112,7 +112,7 @@ class Pearson_Corr_Step():
 ################################################################################################
 # CHI SQUARED FEATURE SELECTION
 ################################################################################################
-class Chi_Selection_Step():
+class Chi_Squared_Selection_Step():
     def __init__(self, select_kwargs={}):
         self.description = "Chi Squared Feature Selection"
         self.select_kwargs = select_kwargs

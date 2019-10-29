@@ -7,7 +7,7 @@
 ################################################################################################
 # Runs a pipeline with given steps
 
-class DS_Pipeline():
+class Pipeline():
     def __init__(self, steps):
         self.steps = steps
 

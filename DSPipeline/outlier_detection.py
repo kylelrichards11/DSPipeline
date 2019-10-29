@@ -5,14 +5,14 @@ from sklearn.ensemble import IsolationForest
 from sklearn.neighbors import LocalOutlierFactor
 
 # Internal Imports
-from DS_Pipeline.data_managing import split_X_y
-from DS_Pipeline.errors import Transform_Error
+from .data_managing import split_X_y
+from .errors import Transform_Error
 
 ################################################################################################
 # ANGLE BASED OUTLIER DETECTION
 ################################################################################################
 
-class Abod_Step():
+class ABOD_Step():
     def __init__(self, num_remove, kwargs={}):
         self.description = 'Angle Based Outlier Detection'
         self.num_remove = num_remove
