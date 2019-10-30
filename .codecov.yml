@@ -1,3 +1,4 @@
 ignore:
 - "setup.py"
 - "example.py"
+- "example_add.py"

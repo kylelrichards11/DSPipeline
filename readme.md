@@ -66,3 +66,61 @@ To add a step, first create a class for it in the appropriate file.
 The constructor must contain all information that needs to be remembered to recreate the step. All step specific arguments must pass through here. Additionally, a field stating that the model has been fitted must be created. This is used in the `transform` function to throw a `TransformError` if the step has not been previously fitted. Finally `self.removes_samples` specifies whether or not running this step will remove data samples. Generally this is okay for training data but not for testing data.
 
 `fit` and `transform` methods must be created, each of which must have the signature `func(self, data, y_label='label')`. `fit` should take care of anything that is done based on the train data, while `transform` needs to be able to run on any input data set. Note that when `transform` is called on a test set, there are no labels. The `fit` function must also return the transformed data because when fitting in the pipeline, each step must be fitted to the output from the previous steps. Therefore in order to fit a step, the data must have been transformed by the previous steps. 
+
+## Example Adding
+```python
+import pandas as pd
+import numpy as np
+
+from DSPipeline.errors import TransformError
+from DSPipeline.ds_pipeline import Pipeline
+
+# Create a new step that only selects features with the letter 'a'
+class SelectAStep():
+    def __init__(self):
+        self.description = "Select features with \'a\'"
+        self.removes_samples = False
+        self.features = None
+
+    def fit(self, data, y_label='y'):
+        features = [col for col in list(data.columns) if 'a' in col] 
+        # Make sure we don't drop the label!
+        if y_label not in features:
+            features.append(y_label)
+        self.features = features
+        return self.transform(data, y_label=y_label)
+
+    def transform(self, data, y_label='y'):
+        if self.features is None:
+            raise TransformError
+        return data[self.features]
+
+# MAIN
+if __name__ == "__main__":
+    
+    # Create Data
+    shape = (5, 10)
+    data = np.random.uniform(low=0, high=10, size=shape)
+    cols = ['apple', 'banana', 'cucumber', 'date', 'eggplant', 'fennel', 'grape', 'honeydew', 'iceberg_lettuce', 'y']
+    data = pd.DataFrame(data, columns=cols)
+
+    # Create Pipeline
+    pipeline = Pipeline([SelectAStep()])
+
+    # Run Pipeline
+    new_data = pipeline.fit_transform(data, y_label='y', verbose=True)
+    print(new_data)
+```
+
+### Output
+
+```
+Fitting Select features with 'a'
+Transforming Select features with 'a'
+      apple    banana      date  eggplant     grape         y
+0  3.416895  0.871671  8.273050  8.790200  7.514323  2.314195
+1  7.412230  7.281992  3.188810  3.872916  8.981018  7.936679
+2  8.967431  1.580992  9.227848  1.920189  3.145534  4.457451
+3  6.543678  8.089490  1.338272  0.186144  3.652871  5.901529
+4  7.673827  3.143026  9.678693  3.899328  4.019177  2.502145
+```
