@@ -2,17 +2,10 @@
 
 # Data Science Pipeline
 ## Overview
-This pacakge is inspired by `sklearn`'s `pipeline` [class](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html). It extends the capabilities to non-sklearn data manipulation methods. The package consists of `_Step` classes which are wrappers for the data transformation technique. Each `_Step` object is created with the arguments needed to apply the data transformation method. These `_Step` classes represent "remembering" the data transformation so that it can be applied to any given data set.
-
-## Adding a Pipeline Step
-To add a step, first create a class for it in the appropriate file. 
-
-The constructor must contain all information that needs to be remembered to recreate the step. All step specific arguments must pass through here. Additionally, a field stating that the model has been fitted must be created. Finally `self.test_data` specifies whether or not to run this step on test data (`True` for all steps besides outlier detection).
-
-`fit_transform` and `transform` methods must be created, each of which must have the signature `func(self, data, y_label='label')`. `fit_transform` should take care of anything that is done based on the train data, while `transform` needs to be able to run on any input data set. Note that when `transform` is called on a test set, there are no labels. There is no `fit` function because when fitting in the pipeline, you must fit each step to the output from the previous steps. Therefore in order to fit a step, the data must have been transformed by the previous steps. 
+This pacakge is inspired by `sklearn`'s `pipeline` [class](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html). It extends the capabilities to non-sklearn data manipulation methods. The package consists of `Step` classes which are wrappers for the data transformation technique. Each `Step` object is created with the arguments needed to apply the data transformation method. These `Step` classes represent "remembering" the data transformation so that it can be applied to any given data set.
 
 ## Applying the Data Transformations
-`_Step` objects are created and then put into a list in the desired order of the transformations. This list of steps is passed into the `DS_Pipeline` class to create the pipeline object. For the first use, the pipeline must be fit to a dataset (generally the training data). Then any subsequent datasets can be fit with the same features as the first dataset.
+`Step` objects are created and then put into a list in the desired order of the transformations. This list of steps is passed into the `Pipeline` class to create the pipeline object. For the first use, the pipeline must be fit to a dataset (generally the training data). Then any subsequent datasets can be fit with the same features as the first dataset.
 
 ## Example Use
 ```python
@@ -66,3 +59,10 @@ model.fit(train_X, train_y)
 y_hat = model.predict(test_X_transformed)
 print(f'MAE: {mean_absolute_error(test_y, y_hat):.3f}')
 ```
+
+## Adding a Pipeline Step
+To add a step, first create a class for it in the appropriate file. 
+
+The constructor must contain all information that needs to be remembered to recreate the step. All step specific arguments must pass through here. Additionally, a field stating that the model has been fitted must be created. This is used in the `transform` function to throw a `TransformError` if the step has not been previously fitted. Finally `self.removes_samples` specifies whether or not running this step will remove data samples. Generally this is okay for training data but not for testing data.
+
+`fit` and `transform` methods must be created, each of which must have the signature `func(self, data, y_label='label')`. `fit` should take care of anything that is done based on the train data, while `transform` needs to be able to run on any input data set. Note that when `transform` is called on a test set, there are no labels. The `fit` function must also return the transformed data because when fitting in the pipeline, each step must be fitted to the output from the previous steps. Therefore in order to fit a step, the data must have been transformed by the previous steps. 
