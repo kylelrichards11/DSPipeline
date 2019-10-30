@@ -175,5 +175,5 @@ class SinStep():
         sin_data.columns = new_cols
         
         if self.append_data:   
-            return pd.concat(data, sin_data)
+            return pd.concat((data, sin_data), axis=1)
         return sin_data
