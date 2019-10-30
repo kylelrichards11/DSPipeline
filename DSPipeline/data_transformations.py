@@ -6,7 +6,7 @@ import numpy as np
 
 # Internal Imports
 from .data_managing import split_x_y
-from .errors import Transform_Error
+from .errors import TransformError
 
 ################################################################################################
 # SCALE DATA
@@ -31,7 +31,7 @@ class StandardScalerStep():
 
     def transform(self, data, y_label='label'):
         if self.fitted is None:
-            raise Transform_Error
+            raise TransformError
 
         if y_label in data.columns:
             X_data, y_data = split_x_y(data, y_label=y_label)
@@ -71,7 +71,7 @@ class PCAStep():
 
     def transform(self, data, y_label='label'):
         if self.fitted is None:
-            raise Transform_Error
+            raise TransformError
         
         if y_label in data.columns:
             X_data, y_data = split_x_y(data, y_label=y_label)
@@ -118,7 +118,7 @@ class PolyStep():
 
     def transform(self, data, y_label='label'):
         if self.fitted is None:
-            raise Transform_Error
+            raise TransformError
 
         if y_label in data.columns:
             X_data, y_data = split_x_y(data, y_label=y_label)

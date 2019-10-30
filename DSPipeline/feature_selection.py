@@ -8,7 +8,7 @@ from sklearn.linear_model import Lasso
 
 # Internal Imports
 from .data_managing import split_x_y
-from .errors import Transform_Error
+from .errors import TransformError
 
 ################################################################################################
 ## LIST FEATURE SELECTION
@@ -70,7 +70,7 @@ class RegTreeSelectionStep():
 
     def transform(self, data, y_label='label'):
         if self.features is None:
-            raise Transform_Error
+            raise TransformError
 
         if y_label in data.columns:
             X_data, y_data = split_x_y(data, y_label=y_label)
@@ -103,7 +103,7 @@ class PearsonCorrStep():
 
     def transform(self, data, y_label='label'):
         if self.features is None:
-            raise Transform_Error
+            raise TransformError
 
         if y_label in data.columns:
             f = list(self.features.index)
@@ -132,7 +132,7 @@ class ChiSqSelectionStep():
 
     def transform(self, data, y_label='label'):
         if self.features is None:
-            raise Transform_Error
+            raise TransformError
 
         features = self.features.copy()
         if y_label in data.columns:
@@ -164,7 +164,7 @@ class LassoSelectionStep():
 
     def transform(self, data, y_label='label'):
         if self.features is None:
-            raise Transform_Error
+            raise TransformError
         
         if y_label in data.columns:
             self.features.append(y_label)

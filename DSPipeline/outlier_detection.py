@@ -6,7 +6,7 @@ from sklearn.neighbors import LocalOutlierFactor
 
 # Internal Imports
 from .data_managing import split_x_y
-from .errors import Transform_Error
+from .errors import TransformError
 
 ################################################################################################
 # ANGLE BASED OUTLIER DETECTION
@@ -58,7 +58,7 @@ class IsoForestStep():
 
     def transform(self, data, y_label='label'):
         if self.fitted is None:
-            raise Transform_Error
+            raise TransformError
 
         if self.include_y:
             outlier_labels = self.fitted.predict(data)
@@ -91,7 +91,7 @@ class LOFStep():
 
     def transform(self, data, y_label='label'):
         if self.fitted is None:
-            raise Transform_Error
+            raise TransformError
 
         if self.include_y:
             outlier_labels = self.fitted.fit_predict(data)
