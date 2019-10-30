@@ -177,3 +177,44 @@ class SinStep():
         if self.append_data:   
             return pd.concat((data, sin_data), axis=1)
         return sin_data
+
+################################################################################################
+# LOG FEATURES
+################################################################################################
+# Takes the log of every value in the given columns. If no columns given then the log of
+# every column is taken
+
+class LogStep():
+    def __init__(self, append_data=False, columns=None, log_func=np.log):
+            self.description = "Log"
+            self.columns = columns
+            self.append_data = append_data
+            self.fitted = False
+            self.removes_samples = False
+            self.log_func = log_func
+        
+    def fit(self, data, y_label='label'):
+        self.fitted = True
+        return self.transform(data, y_label=y_label)
+
+    def transform(self, data, y_label='label'):
+        if not self.fitted:
+            raise TransformError
+        
+        if self.columns is None:
+            temp = data
+        else:
+            temp = data[self.columns]
+
+        log_data = self.log_func(temp)
+        new_cols = []
+        for c in log_data.columns:
+            if y_label == c:
+                new_cols.append(c)
+            else:
+                new_cols.append('log_' + c)
+        log_data.columns = new_cols
+        
+        if self.append_data:   
+            return pd.concat((data, log_data), axis=1)
+        return log_data

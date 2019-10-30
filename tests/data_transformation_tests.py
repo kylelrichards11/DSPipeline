@@ -1,8 +1,9 @@
 # External Imports
 import unittest
+import numpy as np
 
 # Internal Imports
-from DSPipeline.data_transformations import PCAStep, PolyStep, SinStep, StandardScalerStep
+from DSPipeline.data_transformations import *
 from tests.step_tests import StepTest
 from tests.utils import rand_df
 
@@ -12,6 +13,16 @@ TEST_SHAPE = (100, 99)
 ################################################################################################
 # TESTS
 ################################################################################################
+class LogTests1(unittest.TestCase, StepTest):
+    step = LogStep()
+    train_data = rand_df(shape=TRAIN_SHAPE, val_range=(0, 100))
+    test_data = rand_df(shape=TEST_SHAPE, val_range=(0, 100), labeled=False)
+
+class LogTests2(unittest.TestCase, StepTest):
+    step = LogStep(append_data=True, columns=['1', '10'], log_func=np.log10)
+    train_data = rand_df(shape=TRAIN_SHAPE, val_range=(0, 100))
+    test_data = rand_df(shape=TEST_SHAPE, val_range=(0, 100), labeled=False)
+
 class PCATests1(unittest.TestCase, StepTest):
     step = PCAStep()
     train_data = rand_df(shape=TRAIN_SHAPE)
