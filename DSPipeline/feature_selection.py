@@ -20,11 +20,16 @@ class ListSelectionStep():
         self.description = 'Select features: ' + str(features)
         self.features = features
         self.removes_samples = False
+        self.fitted = False
 
     def fit(self, data, y_label='label'):
-        pass
+        self.fitted = True
+        return self.transform(data, y_label=y_label)
 
     def transform(self, data, y_label='label'):
+        if not self.fitted:
+            raise TransformError
+
         # Make sure we do not drop y
         features = self.features.copy()
         if (y_label in data.columns) and (y_label not in self.features):

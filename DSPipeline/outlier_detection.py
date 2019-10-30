@@ -26,6 +26,9 @@ class ABODStep():
         return data
 
     def transform(self, data, y_label='label'):
+        if self.fitted is None:
+            raise TransformError
+        
         scores = pd.DataFrame(self.fitted.decision_scores_*-1, columns=['score'])
         scores = scores.sort_values('score', ascending=False)
 

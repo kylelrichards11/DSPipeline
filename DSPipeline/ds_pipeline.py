@@ -1,6 +1,7 @@
 # External Imports
 
 # Internal Imports
+from DSPipeline.errors import TransformError
 
 ################################################################################################
 # PIPELINE
@@ -35,10 +36,14 @@ class Pipeline():
 class EmptyStep():
     def __init__(self):
         self.description = "Empty Step"
-        self.test_data = True
+        self.removes_samples = False
+        self.fitted = False
 
     def fit(self, data, y_label='label'):
+        self.fitted = True
         return data
 
     def transform(self, data, y_label='label'):
-        return data
+        if self.fitted:
+            return data
+        raise TransformError

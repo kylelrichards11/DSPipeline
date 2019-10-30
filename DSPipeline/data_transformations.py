@@ -149,13 +149,17 @@ class SinStep():
         self.description = "Sine"
         self.columns = columns
         self.append_data = append_data
-        self.fitted = None
+        self.fitted = False
         self.removes_samples = False
     
     def fit(self, data, y_label='label'):
+        self.fitted = True
         return self.transform(data, y_label=y_label)
 
     def transform(self, data, y_label='label'):
+        if not self.fitted:
+            raise TransformError
+        
         if self.columns is None:
             temp = data
         else:

@@ -4,6 +4,7 @@ import pandas as pd
 
 # Internal Imports
 from .utils import rand_df, rand_df_classification
+from DSPipeline.errors import TransformError
 
 ################################################################################################
 # STEP CLASS TESTER
@@ -29,18 +30,17 @@ class StepTest(object):
     ## Make sure the step works
     def test_step(self):
 
-        # Test train data fit transform
-        if self.regression == True:
-            train_data = rand_df()
-        else:
-            train_data = rand_df_classification()
-            
-        self.step.fit(train_data)
-        new_train = self.step.transform(train_data)
-        self.assertTrue(type(new_train) == pd.DataFrame)
+        # Make sure that transform fails if fit has not been called
+        with self.assertRaises(TransformError):
+            self.step.transform(self.train_data)
+
+        # Make sure both fit and transform return a DataFrame    
+        fit_result = self.step.fit(self.train_data)
+        new_train = self.step.transform(self.train_data)
+        self.assertEqual(type(fit_result), pd.DataFrame)
+        self.assertEqual(type(new_train), pd.DataFrame)
 
         # Test test data transform if applicable
         if not self.step.removes_samples:
-            test_data = rand_df(shape=(100, 99), labeled=False)
-            new_test = self.step.transform(test_data)
+            new_test = self.step.transform(self.test_data)
             self.assertTrue(type(new_train) == pd.DataFrame)
