@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/kylelrichards11/DSPipeline.svg?token=wqDVpwhQq3xYjNDgN9tk&branch=master)](https://travis-ci.com/kylelrichards11/DSPipeline) [![codecov](https://codecov.io/gh/kylelrichards11/DSPipeline/branch/master/graph/badge.svg?token=5QP9hGZm8O)](https://codecov.io/gh/kylelrichards11/DSPipeline)
+[![Build Status](https://travis-ci.com/kylelrichards11/DSPipeline.svg?token=wqDVpwhQq3xYjNDgN9tk&branch=master)](https://travis-ci.com/kylelrichards11/DSPipeline) [![codecov](https://codecov.io/gh/kylelrichards11/DSPipeline/branch/master/graph/badge.svg?token=5QP9hGZm8O)](https://codecov.io/gh/kylelrichards11/DSPipeline) [![Documentation Status](https://readthedocs.org/projects/dspipeline/badge/?version=latest)](https://dspipeline.readthedocs.io/en/latest/?badge=latest)
 
 # Data Science Pipeline
 ## Overview
