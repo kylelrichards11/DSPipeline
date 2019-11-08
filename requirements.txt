@@ -3,3 +3,4 @@ numpy==1.17.3
 pandas==0.25.2
 pyod==0.7.5
 scikit-learn==0.21.3
+sphinx==2.2.1
