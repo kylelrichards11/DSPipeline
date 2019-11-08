@@ -3,7 +3,7 @@
 # import os
 # import sys
 # sys.path.insert(0, os.path.abspath('.'))
-
+import sphinx_rtd_theme
 
 # -- Project information -----------------------------------------------------
 
@@ -27,7 +27,8 @@ release = '0.0.1'
 extensions = [
     'sphinx.ext.todo',
     'sphinx.ext.githubpages',
-    'sphinx.ext.autodoc'
+    'sphinx.ext.autodoc',
+    'sphinx_rtd_theme'
 ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -85,6 +86,5 @@ html_static_path = ['_static']
 #
 # html_sidebars = {}
 #---sphinx-themes-----
-html_theme = 'neo_rtd_theme'
-import sphinx_theme
-html_theme_path = [sphinx_theme.get_html_theme_path()]
+html_theme = "sphinx_rtd_theme"
+# html_theme_path = [sphinx_rtd_theme.get_html_theme_path()]
