@@ -124,3 +124,12 @@ Transforming Select features with 'a'
 3  6.543678  8.089490  1.338272  0.186144  3.652871  5.901529
 4  7.673827  3.143026  9.678693  3.899328  4.019177  2.502145
 ```
+
+# Testing
+To run all tests simply call
+
+```
+pytest test.py
+```
+
+Tests for individual files are in the `tests/` directory.
