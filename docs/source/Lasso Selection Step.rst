@@ -1,7 +1,7 @@
 Lasso Selection Step
 ====================
 
-Uses lasso regularization to select features. Uses sklearn's **Lasso_** and **SelectKBest_** classes.
+Uses lasso regularization to select features. Uses sklearn's Lasso_ and SelectKBest_ classes.
 
 .. _Lasso: https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.Lasso.html
 .. _SelectKBest: https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectKBest.html

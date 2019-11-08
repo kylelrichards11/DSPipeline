@@ -1,7 +1,7 @@
 Chi Squared Selection Step
 ==========================
 
-Uses the chi squared test to select relevant features for classification tasks. Uses sklearn's **chi2_** and **SelectKBest_** classes.
+Uses the chi squared test to select relevant features for classification tasks. Uses sklearn's chi2_ and SelectKBest_ classes.
 
 .. _chi2: https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.chi2.html
 .. _SelectKBest: https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectKBest.html

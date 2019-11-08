@@ -1,7 +1,7 @@
 Regression Tree Selection Step
 ==============================
 
-Uses a regression tree to select features. Uses sklearn's **ExtraTreesRegressor** and **SelectFromModel_** classes.
+Uses a regression tree to select features. Uses sklearn's ExtraTreesRegressor_ and SelectFromModel_ classes.
 
 .. _ExtraTreesRegressor: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html
 .. _SelectFromModel: https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectFromModel.html

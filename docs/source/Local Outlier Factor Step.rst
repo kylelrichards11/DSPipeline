@@ -1,7 +1,7 @@
 Local Outlier Factor Step
 =========================
 
-Uses the local outlier factor to detect and remove outliers. Uses sklearn's LocalOutlierFactor class.
+Uses the local outlier factor to detect and remove outliers. Uses sklearn's LocalOutlierFactor_ class.
 
 .. _LocalOutlierFactor: https://scikit-learn.org/stable/modules/generated/sklearn.neighbors.LocalOutlierFactor.html
 
