@@ -4,6 +4,9 @@
 ## Overview
 This pacakge is inspired by `sklearn`'s `pipeline` [class](https://scikit-learn.org/stable/modules/generated/sklearn.pipeline.Pipeline.html). It extends the capabilities to non-sklearn data manipulation methods. The package consists of `Step` classes which are wrappers for the data transformation technique. Each `Step` object is created with the arguments needed to apply the data transformation method. These `Step` classes represent "remembering" the data transformation so that it can be applied to any given data set.
 
+## Documentation
+Documentation can be found at [https://dspipeline.readthedocs.io/en/latest/](https://dspipeline.readthedocs.io/en/latest/).
+
 ## Applying the Data Transformations
 `Step` objects are created and then put into a list in the desired order of the transformations. This list of steps is passed into the `Pipeline` class to create the pipeline object. For the first use, the pipeline must be fit to a dataset (generally the training data). Then any subsequent datasets can be fit with the same features as the first dataset.
 
