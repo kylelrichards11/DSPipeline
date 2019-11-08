@@ -145,12 +145,13 @@ class PolyStep():
 # every column is taken
  
 class SinStep():
-    def __init__(self, append_data=False, columns=None):
+    def __init__(self, append_data=False, columns=None, kwargs={}):
         self.description = "Sine"
         self.columns = columns
         self.append_data = append_data
         self.fitted = False
         self.removes_samples = False
+        self.kwargs = kwargs
     
     def fit(self, data, y_label='label'):
         self.fitted = True
@@ -165,7 +166,7 @@ class SinStep():
         else:
             temp = data[self.columns]
 
-        sin_data = np.sin(temp)
+        sin_data = np.sin(temp, **self.kwargs)
         new_cols = []
         for c in sin_data.columns:
             if y_label == c:
@@ -185,7 +186,7 @@ class SinStep():
 # every column is taken
 
 class LogStep():
-    def __init__(self, append_data=False, columns=None, log_func=np.log):
+    def __init__(self, append_data=False, columns=None, log_func=np.log, kwargs={}):
             self.description = "Log"
             self.columns = columns
             self.append_data = append_data

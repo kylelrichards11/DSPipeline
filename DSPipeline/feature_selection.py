@@ -93,14 +93,15 @@ class RegTreeSelectionStep():
 ################################################################################################
 
 class PearsonCorrStep():
-    def __init__(self, threshold):
+    def __init__(self, threshold, kwargs={}):
         self.description = "Pearson Correlation Feature Selection"
         self.threshold = threshold
+        self.kwargs = kwargs
         self.features = None
         self.removes_samples = False
 
     def fit(self, data, y_label='label'):
-        corr = data.corr()
+        corr = data.corr(**self.kwargs)
         corr_target = abs(corr[y_label])
         relevant_features = corr_target[corr_target > self.threshold]
         self.features = relevant_features.drop(index=y_label)
@@ -119,6 +120,7 @@ class PearsonCorrStep():
 ################################################################################################
 # CHI SQUARED FEATURE SELECTION
 ################################################################################################
+
 class ChiSqSelectionStep():
     def __init__(self, select_kwargs={}):
         self.description = "Chi Squared Feature Selection"
