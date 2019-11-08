@@ -15,7 +15,7 @@ class StepTest(object):
 
     ## Make sure that the step class has the correct attributes
     def test_attributes(self):
-        self.assertTrue(type(self.step.removes_samples) == bool)
+        self.assertTrue(type(self.step.changes_num_samples) == bool)
         self.assertTrue(type(self.step.description) == str)
         self.assertTrue(len(self.step.description) > 1)
 
@@ -41,6 +41,6 @@ class StepTest(object):
         self.assertEqual(type(new_train), pd.DataFrame)
 
         # Test test data transform if applicable
-        if not self.step.removes_samples:
+        if not self.step.changes_num_samples:
             new_test = self.step.transform(self.test_data)
             self.assertTrue(type(new_train) == pd.DataFrame)

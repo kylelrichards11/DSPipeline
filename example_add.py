@@ -8,7 +8,7 @@ from DSPipeline.ds_pipeline import Pipeline
 class SelectAStep():
     def __init__(self):
         self.description = "Select features with \'a\'"
-        self.removes_samples = False
+        self.changes_num_samples = False
         self.features = None
 
     def fit(self, data, y_label='y'):

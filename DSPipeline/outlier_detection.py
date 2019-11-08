@@ -18,7 +18,7 @@ class ABODStep():
         self.num_remove = num_remove
         self.kwargs = kwargs
         self.fitted = None
-        self.removes_samples = True
+        self.changes_num_samples = True
 
     def fit(self, data, y_label='label'):
         abod = ABOD(**self.kwargs)
@@ -47,7 +47,7 @@ class IsoForestStep():
         self.description = "Isolation Forest Outlier Detection"
         self.include_y = include_y
         self.kwargs = kwargs
-        self.removes_samples = True
+        self.changes_num_samples = True
         self.fitted = None
 
     def fit(self, data, y_label='label'):
@@ -86,7 +86,7 @@ class LOFStep():
         self.include_y = include_y
         self.kwargs = kwargs
         self.fitted = None
-        self.removes_samples = True
+        self.changes_num_samples = True
 
     def fit(self, data, y_label='label'):
         self.fitted = LocalOutlierFactor(**self.kwargs)

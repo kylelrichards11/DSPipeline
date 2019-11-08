@@ -19,7 +19,7 @@ class ListSelectionStep():
     def __init__(self, features):
         self.description = 'Select features: ' + str(features)
         self.features = features
-        self.removes_samples = False
+        self.changes_num_samples = False
         self.fitted = False
 
     def fit(self, data, y_label='label'):
@@ -54,7 +54,7 @@ class RegTreeSelectionStep():
         self.description = 'Regression Tree Forest Feature Selection'
         self.tree_kwargs = tree_kwargs
         self.select_kwargs = select_kwargs
-        self.removes_samples = False
+        self.changes_num_samples = False
         self.features = None
 
     def fit(self, data, y_label='label'):
@@ -98,7 +98,7 @@ class PearsonCorrStep():
         self.threshold = threshold
         self.kwargs = kwargs
         self.features = None
-        self.removes_samples = False
+        self.changes_num_samples = False
 
     def fit(self, data, y_label='label'):
         corr = data.corr(**self.kwargs)
@@ -126,7 +126,7 @@ class ChiSqSelectionStep():
         self.description = "Chi Squared Feature Selection"
         self.select_kwargs = select_kwargs
         self.features = None
-        self.removes_samples = False
+        self.changes_num_samples = False
 
     def fit(self, data, y_label='label'):
         X_data, y_data = split_x_y(data, y_label=y_label)
@@ -157,7 +157,7 @@ class LassoSelectionStep():
         self.lasso_kwargs = lasso_kwargs
         self.select_kwargs = select_kwargs
         self.features = None
-        self.removes_samples = False
+        self.changes_num_samples = False
 
     def fit(self, data, y_label='label'):
         X_data, y_data = split_x_y(data, y_label=y_label)

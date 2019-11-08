@@ -17,7 +17,7 @@ class StandardScalerStep():
         self.description = "Standard Scaler"
         self.kwargs = kwargs
         self.fitted = None
-        self.removes_samples = False
+        self.changes_num_samples = False
 
     def fit(self, data, y_label='label'):
         if y_label in data.columns:
@@ -55,7 +55,7 @@ class PCAStep():
         self.kwargs = kwargs
         self.append_data = append_data
         self.fitted = None
-        self.removes_samples = False
+        self.changes_num_samples = False
 
     def fit(self, data, y_label='label'):
 
@@ -105,7 +105,7 @@ class PolyStep():
         self.kwargs = kwargs
         self.append_data = append_data
         self.fitted = None
-        self.removes_samples = False
+        self.changes_num_samples = False
 
     def fit(self, data, y_label='label'):
 
@@ -150,7 +150,7 @@ class SinStep():
         self.columns = columns
         self.append_data = append_data
         self.fitted = False
-        self.removes_samples = False
+        self.changes_num_samples = False
         self.kwargs = kwargs
     
     def fit(self, data, y_label='label'):
@@ -191,7 +191,7 @@ class LogStep():
             self.columns = columns
             self.append_data = append_data
             self.fitted = False
-            self.removes_samples = False
+            self.changes_num_samples = False
             self.log_func = log_func
         
     def fit(self, data, y_label='label'):

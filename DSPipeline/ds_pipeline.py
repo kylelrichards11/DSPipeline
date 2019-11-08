@@ -14,7 +14,7 @@ class Pipeline():
 
     def transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
         for step in self.steps:
-            if not allow_sample_removal and step.removes_samples:
+            if not allow_sample_removal and step.changes_num_samples:
                 continue
             if verbose:
                 print(f'Transforming {step.description}')
@@ -36,7 +36,7 @@ class Pipeline():
 class EmptyStep():
     def __init__(self):
         self.description = "Empty Step"
-        self.removes_samples = False
+        self.changes_num_samples = False
         self.fitted = False
 
     def fit(self, data, y_label='label'):

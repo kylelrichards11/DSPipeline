@@ -66,7 +66,7 @@ print(f'MAE: {mean_absolute_error(test_y, y_hat):.3f}')
 ## Adding a Pipeline Step
 To add a step, first create a class for it in the appropriate file. 
 
-The constructor must contain all information that needs to be remembered to recreate the step. All step specific arguments must pass through here. Additionally, a field stating that the model has been fitted must be created. This is used in the `transform` function to throw a `TransformError` if the step has not been previously fitted. Finally `self.removes_samples` specifies whether or not running this step will remove data samples. Generally this is okay for training data but not for testing data.
+The constructor must contain all information that needs to be remembered to recreate the step. All step specific arguments must pass through here. Additionally, a field stating that the model has been fitted must be created. This is used in the `transform` function to throw a `TransformError` if the step has not been previously fitted. Finally `self.changes_num_samples` specifies whether or not running this step will remove data samples. Generally this is okay for training data but not for testing data.
 
 `fit` and `transform` methods must be created, each of which must have the signature `func(self, data, y_label='label')`. `fit` should take care of anything that is done based on the train data, while `transform` needs to be able to run on any input data set. Note that when `transform` is called on a test set, there are no labels. The `fit` function must also return the transformed data because when fitting in the pipeline, each step must be fitted to the output from the previous steps. Therefore in order to fit a step, the data must have been transformed by the previous steps. 
 
@@ -82,7 +82,7 @@ from DSPipeline.ds_pipeline import Pipeline
 class SelectAStep():
     def __init__(self):
         self.description = "Select features with \'a\'"
-        self.removes_samples = False
+        self.changes_num_samples = False
         self.features = None
 
     def fit(self, data, y_label='y'):
