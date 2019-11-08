@@ -6,6 +6,7 @@
 import unittest
 
 # Internal Imports
+from tests.data_augmentation_tests import *
 from tests.data_manager_tests import *
 from tests.data_transformation_tests import *
 from tests.ds_pipeline_tests import *

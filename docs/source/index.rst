@@ -18,6 +18,7 @@ Guide
 .. toctree::
     :maxdepth: 1
 
+    Data Augmentations
     Data Managing
     Data Transformations
     DS Pipeline
