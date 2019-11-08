@@ -14,7 +14,7 @@ TEST_SHAPE = (100, 99)
 # TESTS
 ################################################################################################
 class ADASYNTests1(unittest.TestCase, StepTest):
-    step = ADASYNStep()
+    step = ADASYNStep(kwargs={'ratio':{0.0 : 100, 1.0: 100}})
     train_data = rand_df_classification(shape=TRAIN_SHAPE, val_range=(0, 100))
     test_data = rand_df_classification(shape=TEST_SHAPE, val_range=(0, 100))
 
