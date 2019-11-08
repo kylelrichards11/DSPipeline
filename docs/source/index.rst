@@ -10,7 +10,7 @@ Installation
 
 .. code-block:: python
 
-    pip install DSPipeline.whl
+    pip install DSPipeline-0.0.1-py3-none-any.whl
 
 Guide
 ^^^^^
