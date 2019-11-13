@@ -13,8 +13,9 @@ from .errors import TransformError
 ################################################################################################
 
 class StandardScalerStep():
-    def __init__(self, kwargs={}):
+    def __init__(self, append_input=False, kwargs={}):
         self.description = "Standard Scaler"
+        self.append_input = append_input
         self.kwargs = kwargs
         self.fitted = None
         self.changes_num_samples = False
@@ -40,6 +41,15 @@ class StandardScalerStep():
             y_data = None
 
         X_scaled = pd.DataFrame(self.fitted.transform(X_data), columns=X_data.columns)
+        if self.append_input:
+            new_cols = []
+            for col in X_scaled.columns:
+                if col == y_label:
+                    new_cols.append(y_label)
+                else:
+                    new_cols.append(col + "_scaled")
+            X_scaled.columns = new_cols
+            X_scaled = pd.concat((data, X_scaled), axis=1).drop_duplicates()
         if y_data is not None:
             return pd.concat((X_scaled, y_data), axis=1)
         return X_scaled
@@ -50,10 +60,10 @@ class StandardScalerStep():
 # Principal Component Analysis with or without appending principal components to original data
 
 class PCAStep():
-    def __init__(self, append_data=False, kwargs={}):
+    def __init__(self, append_input=False, kwargs={}):
         self.description = 'PCA'
         self.kwargs = kwargs
-        self.append_data = append_data
+        self.append_input = append_input
         self.fitted = None
         self.changes_num_samples = False
 
@@ -87,7 +97,7 @@ class PCAStep():
             cols.append("PC_" + str(i))
 
         # Return pca data with or without appending
-        if self.append_data:
+        if self.append_input:
             return pd.concat((data, pd.DataFrame(pca_data, columns=cols)), axis=1)
         if y_data is None:
             return pd.DataFrame(pca_data, columns=cols)
@@ -100,10 +110,10 @@ class PCAStep():
 
 class PolyStep():
 
-    def __init__(self, append_data=False, kwargs={}):
+    def __init__(self, append_input=False, kwargs={}):
         self.description = 'Polynomial Features'
         self.kwargs = kwargs
-        self.append_data = append_data
+        self.append_input = append_input
         self.fitted = None
         self.changes_num_samples = False
 
@@ -130,7 +140,7 @@ class PolyStep():
         cols = self.fitted.get_feature_names(X_data.columns)
         cols = [c.replace(' ', '*') for c in cols]
 
-        if self.append_data:
+        if self.append_input:
             return pd.concat((data, pd.DataFrame(poly_data, columns=cols)), axis=1)
         
         if y_data is not None:
@@ -145,10 +155,10 @@ class PolyStep():
 # every column is taken
  
 class SinStep():
-    def __init__(self, append_data=False, columns=None, kwargs={}):
+    def __init__(self, append_input=False, columns=None, kwargs={}):
         self.description = "Sine"
         self.columns = columns
-        self.append_data = append_data
+        self.append_input = append_input
         self.fitted = False
         self.changes_num_samples = False
         self.kwargs = kwargs
@@ -175,7 +185,7 @@ class SinStep():
                 new_cols.append('sin_' + c)
         sin_data.columns = new_cols
         
-        if self.append_data:   
+        if self.append_input:   
             return pd.concat((data, sin_data), axis=1)
         return sin_data
 
@@ -186,10 +196,10 @@ class SinStep():
 # every column is taken
 
 class LogStep():
-    def __init__(self, append_data=False, columns=None, log_func=np.log, kwargs={}):
+    def __init__(self, append_input=False, columns=None, log_func=np.log, kwargs={}):
             self.description = "Log"
             self.columns = columns
-            self.append_data = append_data
+            self.append_input = append_input
             self.fitted = False
             self.changes_num_samples = False
             self.log_func = log_func
@@ -216,6 +226,6 @@ class LogStep():
                 new_cols.append('log_' + c)
         log_data.columns = new_cols
         
-        if self.append_data:   
+        if self.append_input:   
             return pd.concat((data, log_data), axis=1)
         return log_data
