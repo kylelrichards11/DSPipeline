@@ -46,7 +46,7 @@ class StandardScalerStep():
             for col in X_scaled.columns:
                 new_cols.append(col + "_scaled")
             X_scaled.columns = new_cols
-            X_scaled = pd.concat((data, X_scaled), axis=1).drop_duplicates()
+            X_scaled = pd.concat((data, X_scaled), axis=1)
         if y_data is not None:
             return pd.concat((X_scaled, y_data), axis=1)
         return X_scaled

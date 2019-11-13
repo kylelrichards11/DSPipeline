@@ -23,7 +23,12 @@ class Pipeline():
                 print(f'Fitting {step.description}')
             new_data = step.fit(new_data, y_label=y_label)
         if self.append_input:
-            return pd.concat((data, new_data), axis=1)
+            appended = pd.concat((data, new_data), axis=1)
+            if y_label in appended.columns:
+                y = appended[y_label].iloc[:, 0]
+                appended = appended.drop(columns=[y_label])
+                appended = pd.concat((appended, y), axis=1)
+            return appended
         return new_data
 
     def transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
@@ -35,7 +40,12 @@ class Pipeline():
                 print(f'Transforming {step.description}')
             new_data = step.transform(new_data, y_label=y_label)
         if self.append_input:
-            return pd.concat((data, new_data), axis=1)
+            appended = pd.concat((data, new_data), axis=1)
+            if y_label in appended.columns:
+                y = appended[y_label].iloc[:, 0]
+                appended = appended.drop(columns=[y_label])
+                appended = pd.concat((appended, y), axis=1)
+            return appended
         return new_data
 
     def fit_transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
