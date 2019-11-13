@@ -23,7 +23,7 @@ class Pipeline():
                 print(f'Fitting {step.description}')
             new_data = step.fit(new_data, y_label=y_label)
         if self.append_input:
-            return pd.concat((data, new_data), axis=1).drop_duplicates(keep='last')
+            return pd.concat((data, new_data), axis=1)
         return new_data
 
     def transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
@@ -35,7 +35,7 @@ class Pipeline():
                 print(f'Transforming {step.description}')
             new_data = step.transform(new_data, y_label=y_label)
         if self.append_input:
-            return pd.concat((data, new_data)).drop_duplicates(keep='last')
+            return pd.concat((data, new_data), axis=1)
         return new_data
 
     def fit_transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
