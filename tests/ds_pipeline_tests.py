@@ -2,6 +2,7 @@
 import unittest
 
 # Internal Imports
+from DSPipeline.data_transformations import PCAStep, PolyStep
 from DSPipeline.ds_pipeline import EmptyStep, Pipeline
 from DSPipeline.feature_selection import PearsonCorrStep
 from DSPipeline.outlier_detection import ABODStep
@@ -40,3 +41,14 @@ class TestPipeline(unittest.TestCase):
     def test_fit_transform(self):
         pipeline = Pipeline(self.steps)
         pipeline.fit_transform(self.train_data, verbose=True)
+
+class TestPipelineStep1(unittest.TestCase, StepTest):
+    step = Pipeline([PCAStep(), PolyStep()])
+    train_data = rand_df(shape=(100, 11), val_range=(0, 100))
+    test_data = rand_df(shape=(100, 10), val_range=(0, 100), labeled=False)
+
+class TestPipelineStep2(unittest.TestCase, StepTest):
+    print("TESTING APPEND")
+    step = Pipeline([PCAStep(), PolyStep()], append_input=True)
+    train_data = rand_df(shape=(100, 11), val_range=(0, 100))
+    test_data = rand_df(shape=(100, 10), val_range=(0, 100), labeled=False)
