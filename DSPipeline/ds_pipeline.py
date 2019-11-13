@@ -1,4 +1,5 @@
 # External Imports
+import pandas as pd
 
 # Internal Imports
 from DSPipeline.errors import TransformError
@@ -9,23 +10,33 @@ from DSPipeline.errors import TransformError
 # Runs a pipeline with given steps
 
 class Pipeline():
-    def __init__(self, steps):
+    def __init__(self, steps, append_input=False):
         self.steps = steps
+        self.append_input = append_input
+        self.description = f"Pipeline Step with {[s.description for s in steps]}"
+        self.changes_num_samples = False
+
+    def fit(self, data, y_label='label', verbose=False):
+        new_data = data
+        for step in self.steps:
+            if verbose:
+                print(f'Fitting {step.description}')
+            new_data = step.fit(new_data, y_label=y_label)
+        if self.append_input:
+            return pd.concat((data, new_data), axis=1).drop_duplicates(keep='last')
+        return new_data
 
     def transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
+        new_data = data
         for step in self.steps:
             if not allow_sample_removal and step.changes_num_samples:
                 continue
             if verbose:
                 print(f'Transforming {step.description}')
-            data = step.transform(data, y_label=y_label)
-        return data
-
-    def fit(self, data, y_label='label', verbose=False):
-        for step in self.steps:
-            if verbose:
-                print(f'Fitting {step.description}')
-            data = step.fit(data, y_label=y_label)
+            new_data = step.transform(new_data, y_label=y_label)
+        if self.append_input:
+            return pd.concat((data, new_data)).drop_duplicates(keep='last')
+        return new_data
 
     def fit_transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
         self.fit(data, y_label=y_label, verbose=verbose)
@@ -34,7 +45,7 @@ class Pipeline():
 ################################################################################################
 # An empty step to do nothing with the data
 class EmptyStep():
-    def __init__(self):
+    def __init__(self, append_input=False):
         self.description = "Empty Step"
         self.changes_num_samples = False
         self.fitted = False
