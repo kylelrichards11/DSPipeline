@@ -44,3 +44,10 @@ class StepTest(object):
         if not self.step.changes_num_samples:
             new_test = self.step.transform(self.test_data)
             self.assertTrue(type(new_train) == pd.DataFrame)
+
+        # If the test appends, check that the returned data frame has more columns than the original
+        if hasattr(self.step, 'append_input'):
+            if(self.step.append_input):
+                self.assertGreater(new_train.shape[1], self.train_data.shape[1])
+                if not self.step.changes_num_samples:
+                    self.assertGreater(new_test.shape[1], self.test_data.shape[1])
