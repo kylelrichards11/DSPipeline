@@ -44,10 +44,7 @@ class StandardScalerStep():
         if self.append_input:
             new_cols = []
             for col in X_scaled.columns:
-                if col == y_label:
-                    new_cols.append(y_label)
-                else:
-                    new_cols.append(col + "_scaled")
+                new_cols.append(col + "_scaled")
             X_scaled.columns = new_cols
             X_scaled = pd.concat((data, X_scaled), axis=1).drop_duplicates()
         if y_data is not None:
