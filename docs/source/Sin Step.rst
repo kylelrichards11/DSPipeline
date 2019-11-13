@@ -8,7 +8,7 @@ The Sin Step applies the sine function to specified columns of the given data. I
 
 .. code-block:: python
 
-    DSPipeline.data_transformations.SinStep(self, append_data=False, columns=[], kwargs={})
+    DSPipeline.data_transformations.SinStep(self, append_input=False, columns=[], kwargs={})
 
 Parameters
 ----------
@@ -16,7 +16,7 @@ Parameters
 +---------------+----------+--------------------------------------------------------------------------------------------------------------------+
 | **Parameter** | **Type** | **Description**                                                                                                    |
 +===============+==========+====================================================================================================================+
-| append_data   | *bool*   | Whether to append the sine features to the given data, or to only keep the transformed data                        |
+| append_input  | *bool*   | Whether to append the sine features to the given data, or to only keep the transformed data                        |
 +---------------+----------+--------------------------------------------------------------------------------------------------------------------+
 | columns       | *list*   | Columns to apply the sine function to. If the list is empty then sine is applied to all columns (except y_label).  |
 +---------------+----------+--------------------------------------------------------------------------------------------------------------------+

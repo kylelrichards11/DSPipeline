@@ -8,7 +8,7 @@ The Poly Step applies polynomial feature combinations to the given data with skl
 
 .. code-block:: python
 
-    DSPipeline.data_transformations.PolyStep(self, append_data=False, kwargs={})
+    DSPipeline.data_transformations.PolyStep(self, append_input=False, kwargs={})
 
 Parameters
 ----------
@@ -16,7 +16,7 @@ Parameters
 +---------------+----------+---------------------------------------------------------------------------------------------------+
 | **Parameter** | **Type** | **Description**                                                                                   |
 +===============+==========+===================================================================================================+
-| append_data   | *bool*   | Whether to append the polynomial features to the given data, or to only keep the transformed data |
+| append_input  | *bool*   | Whether to append the polynomial features to the given data, or to only keep the transformed data |
 +---------------+----------+---------------------------------------------------------------------------------------------------+
 | kwargs        | *dict*   | Arguments to be passed to sklearn's **PolynomialFeatures** class                                  |
 +---------------+----------+---------------------------------------------------------------------------------------------------+

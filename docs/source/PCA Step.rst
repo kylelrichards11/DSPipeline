@@ -8,7 +8,7 @@ The PCA Step applies principal component analysis to the given data with sklearn
 
 .. code-block:: python
 
-    DSPipeline.data_transformations.PCAStep(self, append_data=False, kwargs={})
+    DSPipeline.data_transformations.PCAStep(self, append_input=False, kwargs={})
 
 Parameters
 ----------
@@ -16,7 +16,7 @@ Parameters
 +---------------+----------+---------------------------------------------------------------------------------------------------------------+
 | **Parameter** | **Type** | **Description**                                                                                               |
 +===============+==========+===============================================================================================================+
-| append_data   | *bool*   | Whether to append the calculated principal components to the given data, or to only keep the transformed data |
+| append_input  | *bool*   | Whether to append the calculated principal components to the given data, or to only keep the transformed data |
 +---------------+----------+---------------------------------------------------------------------------------------------------------------+
 | kwargs        | *dict*   | Arguments to be passed to sklearn's **PCA** class                                                             |
 +---------------+----------+---------------------------------------------------------------------------------------------------------------+
@@ -70,5 +70,5 @@ Example
     from DSPipeline.data_transformations import PCAStep
 
     data = pd.DataFrame(np.random.uniform(size=(10, 4)), columns=['x1', 'x2', 'x3', 'y'])
-    pca_step = PCAStep(append_data=True, kwargs={'n_components':2})
+    pca_step = PCAStep(append_input=True, kwargs={'n_components':2})
     data_with_pca = pca_step.fit(data, y_label='y')

@@ -1,21 +1,23 @@
 Pipeline
 ========
 
-The Pipeline class stores all of the steps that can be applied to data.
+The Pipeline class stores all of the steps that can be applied to data. It can also be used as a single step containing other sub steps.
 
 
 .. code-block:: python
 
-    DSPipeline.ds_pipeline.Pipeline(self, steps)
+    DSPipeline.ds_pipeline.Pipeline(self, steps, append_input=False)
 
 Parameters
 ----------
 
-+---------------+----------+-------------------------------------+
-| **Parameter** | **Type** | **Description**                     |
-+===============+==========+=====================================+
-| steps         | *list*   | Steps that are part of the pipeline |
-+---------------+----------+-------------------------------------+
++---------------+----------+------------------------------------------------------------------------------------------------+
+| **Parameter** | **Type** | **Description**                                                                                |
++===============+==========+================================================================================================+
+| steps         | *list*   | Steps that are part of the pipeline                                                            |
++---------------+----------+------------------------------------------------------------------------------------------------+
+| append_input  | *bool*   | Whether to append the transformed data to the given data, or to only keep the transformed data |
++---------------+----------+------------------------------------------------------------------------------------------------+
 
 Methods
 -------
@@ -65,7 +67,7 @@ fit_transform()
 
 .. code-block:: python
 
-    fit_transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
+    .fit_transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
 
 +------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
 | **Parameter**          | **Type**       | **Description**                                                                                                                                   |
@@ -88,10 +90,9 @@ Example
 
     # DSPipeline Imports
     from DSPipeline.ds_pipeline import Pipeline
-    from DSPipeline.data_transformations import StandardScalerStep
+    from DSPipeline.data_transformations import StandardScalerStep, PCAStep, PolyStep
     from DSPipeline.feature_selection import PearsonCorrStep
     from DSPipeline.data_managing import split_x_y
-    from DSPipeline.outlier_detection import ABODStep
 
     # Other Imports
     import numpy as np
@@ -116,12 +117,16 @@ Example
 
     # Create Steps
     scale_step = StandardScalerStep()
-    abod_step = ABODStep(num_remove=5, kwargs={'contamination':0.05})
-    corr_step = PearsonCorrStep(threshold=0.25)
+    corr_step = PearsonCorrStep(0.10)
+    pca_step = PCAStep(kwargs={'n_components' : 5})
+    poly_step = PolyStep(kwargs={'degree':3, 'include_bias':False})
+
+    # This step will compute 5 principal components and then do polynomial transformations
+    # On those 5 principal components. Then it will append that result to the input data
+    pipeline_step = Pipeline([pca_step, poly_step], append_input=True)
 
     # Make Pipeline
-    pipeline_steps = [scale_step, abod_step, corr_step]
-    pipeline = Pipeline(pipeline_steps)
+    pipeline = Pipeline([scale_step, pipeline_step, corr_step])
 
     # Transform data sets
     train_transformed = pipeline.fit_transform(train, y_label=y_label)

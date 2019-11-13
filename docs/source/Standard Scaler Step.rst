@@ -8,16 +8,18 @@ The Standard Scaler Step scales the given data with sklearn's StandardScaler_.
 
 .. code-block:: python
 
-    DSPipeline.data_transformations.StandardScalerStep(self, kwargs={})
+    DSPipeline.data_transformations.StandardScalerStep(self, append_input=False, kwargs={})
 
 Parameters
 ----------
 
-+---------------+----------+--------------------------------------------------------------+
-| **Parameter** | **Type** | **Description**                                              |
-+===============+==========+==============================================================+
-| kwargs        | *dict*   | Arguments to be passed to sklearn's **StandardScaler** class |
-+---------------+----------+--------------------------------------------------------------+
++---------------+----------+-----------------------------------------------------------------------------------------------+
+| **Parameter** | **Type** | **Description**                                                                               |
++===============+==========+===============================================================================================+
+| append_input  | *bool*   | Whether to append the scaled features to the given data, or to only keep the transformed data |
++---------------+----------+-----------------------------------------------------------------------------------------------+
+| kwargs        | *dict*   | Arguments to be passed to sklearn's **StandardScaler** class                                  |
++---------------+----------+-----------------------------------------------------------------------------------------------+
 
 
 Methods

@@ -8,7 +8,7 @@ The Log Step applies a logarithmic function to specified columns of the given da
 
 .. code-block:: python
 
-    DSPipeline.data_transformations.LogStep(self, append_data=False, columns=None, log_func=np.log, kwargs={}):
+    DSPipeline.data_transformations.LogStep(self, append_input=False, columns=None, log_func=np.log, kwargs={}):
 
 Parameters
 ----------
@@ -16,7 +16,7 @@ Parameters
 +---------------+----------+--------------------------------------------------------------------------------------------------------------------+
 | **Parameter** | **Type** | **Description**                                                                                                    |
 +===============+==========+====================================================================================================================+
-| append_data   | *bool*   | Whether to append the log features to the given data, or to only keep the transformed data                         |
+| append_input  | *bool*   | Whether to append the log features to the given data, or to only keep the transformed data                         |
 +---------------+----------+--------------------------------------------------------------------------------------------------------------------+
 | columns       | *list*   | Columns to apply the log function to. If the list is empty then log is applied to all columns (except y_label).    |
 +---------------+----------+--------------------------------------------------------------------------------------------------------------------+
