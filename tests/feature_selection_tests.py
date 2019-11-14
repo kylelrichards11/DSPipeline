@@ -34,8 +34,13 @@ class ListTests(unittest.TestCase, StepTest):
         with self.assertRaises(KeyError):
             s.fit(data)
 
-class PearsonCorrTests(unittest.TestCase, StepTest):
-    step = PearsonCorrStep(threshold=0.2)
+class PearsonCorrTests1(unittest.TestCase, StepTest):
+    step = PearsonCorrStep(num_features=0.2)
+    train_data = rand_df(shape=TRAIN_SHAPE)
+    test_data = rand_df(shape=TEST_SHAPE, labeled=False)
+
+class PearsonCorrTests2(unittest.TestCase, StepTest):
+    step = PearsonCorrStep(num_features=50)
     train_data = rand_df(shape=TRAIN_SHAPE)
     test_data = rand_df(shape=TEST_SHAPE, labeled=False)
 

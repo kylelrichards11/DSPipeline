@@ -47,7 +47,7 @@ class TestPipeline(unittest.TestCase):
         te_data = rand_df(shape=(100, 20), labeled=False)
         scale_step = StandardScalerStep()
         chi_step = ChiSqSelectionStep(select_kwargs={'k':20})
-        corr_step = PearsonCorrStep(threshold=0.1)
+        corr_step = PearsonCorrStep(num_features=0.1)
         pca_step = PCAStep(append_input=False, kwargs={'n_components' : 5})
         poly_step = PolyStep(kwargs={'degree':3, 'include_bias':False})
         pipeline = Pipeline([scale_step, Pipeline([pca_step, poly_step], append_input=True), chi_step])

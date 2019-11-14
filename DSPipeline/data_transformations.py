@@ -169,21 +169,28 @@ class SinStep():
             raise TransformError
         
         if self.columns is None:
-            temp = data
+            temp = data.copy()
         else:
             temp = data[self.columns]
 
-        sin_data = np.sin(temp, **self.kwargs)
+        if y_label in temp.columns:
+            temp_X, temp_y = split_x_y(temp, y_label=y_label)
+        else:
+            temp_X = temp
+            temp_y = None
+
+        sin_data = np.sin(temp_X, **self.kwargs)
         new_cols = []
         for c in sin_data.columns:
-            if y_label == c:
-                new_cols.append(c)
-            else:
-                new_cols.append('sin_' + c)
+            new_cols.append('sin_' + c)
         sin_data.columns = new_cols
         
         if self.append_input:   
             return pd.concat((data, sin_data), axis=1)
+
+        if temp_y is not None:
+            return pd.concat((sin_data, temp_y), axis=1)
+
         return sin_data
 
 ################################################################################################
@@ -210,19 +217,26 @@ class LogStep():
             raise TransformError
         
         if self.columns is None:
-            temp = data
+            temp = data.copy()
         else:
             temp = data[self.columns]
+
+        if y_label in temp.columns:
+            temp_X, temp_y = split_x_y(temp, y_label=y_label)
+        else:
+            temp_X = temp
+            temp_y = None
 
         log_data = self.log_func(temp)
         new_cols = []
         for c in log_data.columns:
-            if y_label == c:
-                new_cols.append(c)
-            else:
-                new_cols.append('log_' + c)
+            new_cols.append('log_' + c)
         log_data.columns = new_cols
         
         if self.append_input:   
             return pd.concat((data, log_data), axis=1)
+
+        if temp_y is not None:
+            return pd.concat((log_data, temp_y), axis=1)
+
         return log_data

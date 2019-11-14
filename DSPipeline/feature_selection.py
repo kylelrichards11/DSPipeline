@@ -93,9 +93,9 @@ class RegTreeSelectionStep():
 ################################################################################################
 
 class PearsonCorrStep():
-    def __init__(self, threshold, kwargs={}):
+    def __init__(self, num_features, kwargs={}):
         self.description = "Pearson Correlation Feature Selection"
-        self.threshold = threshold
+        self.num_features = num_features
         self.kwargs = kwargs
         self.features = None
         self.changes_num_samples = False
@@ -103,7 +103,11 @@ class PearsonCorrStep():
     def fit(self, data, y_label='label'):
         corr = data.corr(**self.kwargs)
         corr_target = abs(corr[y_label])
-        relevant_features = corr_target[corr_target > self.threshold]
+        if self.num_features < 1:
+            relevant_features = corr_target[corr_target > self.num_features]
+        else:
+            corr_target = corr_target.sort_values(ascending=False)
+            relevant_features = corr_target.iloc[:(self.num_features + 1)]
         self.features = relevant_features.drop(index=y_label)
         return self.transform(data, y_label=y_label)
 

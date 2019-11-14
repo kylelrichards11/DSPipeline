@@ -8,18 +8,18 @@ Uses pearson's correlation to select features. Uses pandas's corr_ method.
 
 .. code-block:: python
 
-    DSPipeline.feature_selection.PearsonCorrStep(self, threshold, kwargs={}):
+    DSPipeline.feature_selection.PearsonCorrStep(self, num_features, kwargs={}):
 
 Parameters
 ----------
 
-+---------------+----------+-----------------------------------------------------+
-| **Parameter** | **Type** | **Description**                                     |
-+===============+==========+=====================================================+
-| threshold     | *float*  | Minimum correlation value to keep (between 0 and 1) |
-+---------------+----------+-----------------------------------------------------+
-| kwargs        | *dict*   | Arguments to pass to .corr() function               |
-+---------------+----------+-----------------------------------------------------+
++---------------+----------+----------------------------------------------------------------------------------------+
+| **Parameter** | **Type** | **Description**                                                                        |
++===============+==========+========================================================================================+
+| num_features  | *float*  | Number of features to keep. If less than 1, then that is the minimum correlation value |
++---------------+----------+----------------------------------------------------------------------------------------+
+| kwargs        | *dict*   | Arguments to pass to .corr() function                                                  |
++---------------+----------+----------------------------------------------------------------------------------------+
 
 
 Methods
@@ -70,6 +70,5 @@ Example
     from DSPipeline.feature_selection import PearsonCorrStep
 
     data = pd.DataFrame(np.random.uniform(size=(10, 4)), columns=['x1', 'x2', 'x3', 'y'])
-    corr_step = PearsonCorrStep(threshold=0.10) # The threshold may or may not keep any columns
-                                                # depending on the random data generated
+    corr_step = PearsonCorrStep(num_features=2)
     new_data = corr_step.fit(data, y_label='y')

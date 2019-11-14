@@ -31,7 +31,7 @@ test_X, test_y = split_x_y(test, y_label=y_label)
 # Create Steps
 scale_step = StandardScalerStep()
 abod_step = ABODStep(num_remove=5, kwargs={'contamination':0.05})
-corr_step = PearsonCorrStep(threshold=0.25)
+corr_step = PearsonCorrStep(num_features=0.25)
 
 # Make Pipeline
 pipeline_steps = [scale_step, abod_step, corr_step]
