@@ -5,7 +5,7 @@ import numpy as np
 # Internal Imports
 from DSPipeline.data_transformations import *
 from tests.step_tests import StepTest
-from tests.utils import rand_df
+from tests.utils import rand_df, rand_df_classification
 
 TRAIN_SHAPE = (100, 100)
 TEST_SHAPE = (100, 99)
@@ -13,6 +13,16 @@ TEST_SHAPE = (100, 99)
 ################################################################################################
 # TESTS
 ################################################################################################
+class LDATransform1(unittest.TestCase, StepTest):
+    step = LDATransformStep()
+    train_data = rand_df_classification(shape=TRAIN_SHAPE, val_range=(0, 100))
+    test_data = rand_df(shape=TEST_SHAPE, val_range=(0, 100), labeled=False)
+
+class LDATransform2(unittest.TestCase, StepTest):
+    step = LDATransformStep(append_input=True)
+    train_data = rand_df_classification(shape=TRAIN_SHAPE, val_range=(0, 100))
+    test_data = rand_df(shape=TEST_SHAPE, val_range=(0, 100), labeled=False)
+
 class LogTests1(unittest.TestCase, StepTest):
     step = LogStep()
     train_data = rand_df(shape=TRAIN_SHAPE, val_range=(0, 100))

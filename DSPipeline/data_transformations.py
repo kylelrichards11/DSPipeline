@@ -1,6 +1,7 @@
 # External Imports
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler, PolynomialFeatures
+from sklearn.discriminant_analysis import LinearDiscriminantAnalysis
 import pandas as pd
 import numpy as np
 
@@ -240,3 +241,49 @@ class LogStep():
             return pd.concat((log_data, temp_y), axis=1)
 
         return log_data
+
+################################################################################################
+# LDA TRANSFORMATION
+################################################################################################
+# Uses linear discriminant analysis to project the data into the most seperable components
+
+class LDATransformStep():
+
+    def __init__(self, append_input=False, kwargs={}):
+        self.description = "LDA Feature Transformation"
+        self.append_input = append_input
+        self.kwargs = kwargs
+        self.fitted = None
+        self.changes_num_samples = False
+
+    def fit(self, data, y_label='label'):
+        X_data, y_data = split_x_y(data, y_label=y_label)
+        lda = LinearDiscriminantAnalysis(**self.kwargs)
+        self.fitted = lda.fit(X_data, y_data)
+        return self.transform(data, y_label=y_label)
+
+    def transform(self, data, y_label='label'):
+        if self.fitted is None:
+            raise TransformError
+
+        if y_label in data.columns:
+            X_data, y_data = split_x_y(data, y_label=y_label)
+        else:
+            X_data = data
+            y_data = None
+
+        lda_data = self.fitted.transform(X_data)
+        
+        lda_cols = []
+        for i in range(1, lda_data.shape[1]+1):
+            lda_cols.append(f"LDA_{i}")
+
+        lda_data = pd.DataFrame(lda_data, columns=lda_cols)
+
+        if self.append_input:
+            return pd.concat((data, lda_data), axis=1)
+        
+        if y_data is None:
+            return lda_data
+
+        return pd.concat((lda_data, y_data), axis=1)
