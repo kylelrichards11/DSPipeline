@@ -8,5 +8,5 @@ Feature Selection
     Lasso Selection Step
     List Selection Step
     Pearson Correlation Step
-    Regression Tree Selection Step
+    Tree Selection Step
 

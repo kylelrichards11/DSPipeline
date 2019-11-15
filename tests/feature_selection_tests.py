@@ -1,8 +1,9 @@
 # External Imports
 import unittest
+from sklearn.ensemble import ExtraTreesClassifier
 
 # Internal Imports
-from DSPipeline.feature_selection import ChiSqSelectionStep, LassoSelectionStep, ListSelectionStep, PearsonCorrStep, RegTreeSelectionStep
+from DSPipeline.feature_selection import ChiSqSelectionStep, LassoSelectionStep, ListSelectionStep, PearsonCorrStep, TreeSelectionStep
 from tests.step_tests import StepTest
 from tests.utils import rand_df, rand_df_classification
 
@@ -44,7 +45,12 @@ class PearsonCorrTests2(unittest.TestCase, StepTest):
     train_data = rand_df(shape=TRAIN_SHAPE)
     test_data = rand_df(shape=TEST_SHAPE, labeled=False)
 
-class RegTreeTests(unittest.TestCase, StepTest):
-    step = RegTreeSelectionStep()
+class TreeTests1(unittest.TestCase, StepTest):
+    step = TreeSelectionStep()
     train_data = rand_df(shape=TRAIN_SHAPE)
+    test_data = rand_df(shape=TEST_SHAPE, labeled=False)
+
+class TreeTests2(unittest.TestCase, StepTest):
+    step = TreeSelectionStep(tree_model=ExtraTreesClassifier)
+    train_data = rand_df_classification(shape=TRAIN_SHAPE)
     test_data = rand_df(shape=TEST_SHAPE, labeled=False)

@@ -1,7 +1,7 @@
 from .data_managing import split_x_y
 from .data_transformations import StandardScalerStep, PCAStep, PolyStep
 from .ds_pipeline import EmptyStep, Pipeline
-from .feature_selection import PearsonCorrStep, RegTreeSelectionStep, ListSelectionStep, ChiSqSelectionStep, LassoSelectionStep
+from .feature_selection import PearsonCorrStep, TreeSelectionStep, ListSelectionStep, ChiSqSelectionStep, LassoSelectionStep
 from .outlier_detection import ABODStep, IsoForestStep, LOFStep
 
 __all__ = [
@@ -13,7 +13,7 @@ __all__ = [
     "EmptyStep",
     "Pipeline",
     "PearsonCorrStep",
-    "RegTreeSelectionStep",
+    "TreeSelectionStep",
     "ListSelectionStep",
     "ChiSqSelectionStep",
     "LassoSelectionStep",

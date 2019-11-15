@@ -49,24 +49,25 @@ class ListSelectionStep():
 ## REGRESSION FOREST FEATURE SELECTION
 ################################################################################################
 
-class RegTreeSelectionStep():
-    def __init__(self, tree_kwargs={'n_estimators':100}, select_kwargs={}):
-        self.description = 'Regression Tree Forest Feature Selection'
+class TreeSelectionStep():
+    def __init__(self, tree_model=ExtraTreesRegressor, tree_kwargs={'n_estimators':100}, select_kwargs={}):
+        self.description = 'Tree Feature Selection'
+        self.tree_model = tree_model
         self.tree_kwargs = tree_kwargs
         self.select_kwargs = select_kwargs
         self.changes_num_samples = False
         self.features = None
 
     def fit(self, data, y_label='label'):
-        reg_forest = ExtraTreesRegressor(**self.tree_kwargs)
-        reg_forest_fitter = SelectFromModel(reg_forest, **self.select_kwargs)
+        model = self.tree_model(**self.tree_kwargs)
+        fitter = SelectFromModel(model, **self.select_kwargs)
 
         cols = data.columns
         X_data, y_data = split_x_y(data, y_label=y_label)
 
-        reg_forest_fitter.fit(X_data, y_data)
+        fitter.fit(X_data, y_data)
 
-        features_i = reg_forest_fitter.get_support(indices=True)
+        features_i = fitter.get_support(indices=True)
         feature_names = []
         for i in features_i:
             feature_names.append(cols[i])

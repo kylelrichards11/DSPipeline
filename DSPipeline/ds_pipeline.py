@@ -52,6 +52,9 @@ class Pipeline():
         self.fit(data, y_label=y_label, verbose=verbose)
         return self.transform(data, y_label=y_label, allow_sample_removal=allow_sample_removal, verbose=verbose)
 
+    def copy(self):
+        return Pipeline(self.steps, append_input=self.append_input)
+
 ################################################################################################
 # An empty step to do nothing with the data
 class EmptyStep():

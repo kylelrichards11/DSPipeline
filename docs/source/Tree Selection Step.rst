@@ -1,7 +1,7 @@
-Regression Tree Selection Step
+Tree Selection Step
 ==============================
 
-Uses a regression tree to select features. Uses sklearn's ExtraTreesRegressor_ and SelectFromModel_ classes.
+Uses a tree to select features. Uses sklearn's ExtraTreesRegressor_ (default) and SelectFromModel_ classes.
 
 .. _ExtraTreesRegressor: https://scikit-learn.org/stable/modules/generated/sklearn.ensemble.ExtraTreesRegressor.html
 .. _SelectFromModel: https://scikit-learn.org/stable/modules/generated/sklearn.feature_selection.SelectFromModel.html
@@ -9,7 +9,7 @@ Uses a regression tree to select features. Uses sklearn's ExtraTreesRegressor_ a
 
 .. code-block:: python
 
-    DSPipeline.feature_selection.RegTreeSelectionStep(self, tree_kwargs={'n_estimators':100}, select_kwargs={}):
+    DSPipeline.feature_selection.TreeSelectionStep(self, tree_model=ExtraTreesRegressor, tree_kwargs={'n_estimators':100}, select_kwargs={}):
 
 Parameters
 ----------
@@ -17,7 +17,9 @@ Parameters
 +----------------+----------+------------------------------------------+
 | **Parameter**  | **Type** | **Description**                          |
 +================+==========+==========================================+
-| tree_kwargs    | *dict*   | Arguments to pass to ExtraTreesRegressor |
+| tree_model     | object   | Type of sklearn tree model to use        |
++----------------+----------+------------------------------------------+
+| tree_kwargs    | *dict*   | Arguments to pass to sklearn tree model  |
 +----------------+----------+------------------------------------------+
 | select_kwargs  | *dict*   | Arguments to pass to SelectFromModel     |
 +----------------+----------+------------------------------------------+
@@ -68,8 +70,8 @@ Example
 
     import numpy as np
     import pandas as pd
-    from DSPipeline.feature_selection import RegTreeSelectionStep
+    from DSPipeline.feature_selection import TreeSelectionStep
 
     data = pd.DataFrame(np.random.uniform(size=(10, 4)), columns=['x1', 'x2', 'x3', 'y'])
-    reg_step = RegTreeSelectionStep()
+    reg_step = TreeSelectionStep()
     new_data = reg_step.fit(data, y_label='y')
