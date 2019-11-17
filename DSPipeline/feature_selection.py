@@ -70,7 +70,8 @@ class TreeSelectionStep():
         features_i = fitter.get_support(indices=True)
         feature_names = []
         for i in features_i:
-            feature_names.append(cols[i])
+            if cols[i] != y_label:
+                feature_names.append(cols[i])
         self.features = feature_names
         return self.transform(data, y_label=y_label)
 
