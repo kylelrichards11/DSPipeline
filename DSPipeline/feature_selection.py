@@ -22,27 +22,24 @@ class ListSelectionStep():
         self.changes_num_samples = False
         self.fitted = False
 
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
         self.fitted = True
-        return self.transform(data, y_label=y_label)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if not self.fitted:
             raise TransformError
 
-        # Make sure we do not drop y
-        features = self.features.copy()
-        if (y_label in data.columns) and (y_label not in self.features):
-            features.append(y_label)
-
         # Try to keep features if they are there
         try:
-            return data[features]
+            if y is None:
+                return X[self.features]
+            return X[self.features], y
         except KeyError:
             print("Could not fit features:")
             print(self.features)
             print("to data with features:")
-            print(list(data.columns))
+            print(list(X.columns))
             raise KeyError
 
 ################################################################################################
@@ -58,37 +55,28 @@ class TreeSelectionStep():
         self.changes_num_samples = False
         self.features = None
 
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
         model = self.tree_model(**self.tree_kwargs)
         fitter = SelectFromModel(model, **self.select_kwargs)
 
-        cols = data.columns
-        X_data, y_data = split_x_y(data, y_label=y_label)
-
-        fitter.fit(X_data, y_data)
+        cols = X.columns
+        fitter.fit(X, y)
 
         features_i = fitter.get_support(indices=True)
         feature_names = []
         for i in features_i:
-            if cols[i] != y_label:
-                feature_names.append(cols[i])
+            feature_names.append(cols[i])
         self.features = feature_names
-        return self.transform(data, y_label=y_label)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.features is None:
             raise TransformError
 
-        if y_label in data.columns:
-            X_data, y_data = split_x_y(data, y_label=y_label)
-        else:
-            X_data = data
-            y_data = None
-
-        X_data = data.loc[:, data.columns.isin(self.features)]
-        if y_data is None:
-            return X_data
-        return pd.concat((X_data, y_data), axis=1)
+        X = X.loc[:, X.columns.isin(self.features)]
+        if y is None:
+            return X
+        return X, y
 
 ################################################################################################
 # PEARSON CORRELATION FEATURE SELECTION
@@ -102,7 +90,14 @@ class PearsonCorrStep():
         self.features = None
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
+        # if type(X) != type(pd.DataFrame()):
+        #     y_label = 'y_column'
+        #     X = pd.DataFrame(X)
+        #     y = pd.DataFrame(y, columns=[y_label])
+        if y is not None:
+            y_label = y.name
+        data = pd.concat((X, y), axis=1)
         corr = data.corr(**self.kwargs)
         corr_target = abs(corr[y_label])
         if self.num_features < 1:
@@ -111,17 +106,14 @@ class PearsonCorrStep():
             corr_target = corr_target.sort_values(ascending=False)
             relevant_features = corr_target.iloc[:(self.num_features + 1)]
         self.features = relevant_features.drop(index=y_label)
-        return self.transform(data, y_label=y_label)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.features is None:
             raise TransformError
-
-        if y_label in data.columns:
-            f = list(self.features.index)
-            f.append(y_label)
-            return data.loc[:, data.columns.isin(f)]
-        return data.loc[: , data.columns.isin(self.features.index)]
+        if y is None:
+            return X.loc[:, X.columns.isin(self.features.index)]
+        return X.loc[:, X.columns.isin(self.features.index)], y
 
 ################################################################################################
 # CHI SQUARED FEATURE SELECTION
@@ -134,24 +126,20 @@ class ChiSqSelectionStep():
         self.features = None
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label'):
-        X_data, y_data = split_x_y(data, y_label=y_label)
-        X_norm = pd.DataFrame(MinMaxScaler().fit_transform(X_data), columns=X_data.columns)
+    def fit(self, X, y=None):
+        X_norm = pd.DataFrame(MinMaxScaler().fit_transform(X), columns=X.columns)
         chi_selector = SelectKBest(chi2, **self.select_kwargs)
-        chi_selector.fit(X_norm, y_data)
+        chi_selector.fit(X_norm, y)
         chi_support = chi_selector.get_support()
-        self.features = X_data.loc[:, chi_support].columns.tolist()
-        return self.transform(data, y_label=y_label)
+        self.features = X.loc[:, chi_support].columns.tolist()
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.features is None:
             raise TransformError
-
-        features = self.features.copy()
-        if y_label in data.columns:
-            features.append(y_label)
-            return data.loc[:, data.columns.isin(features)]
-        return data.loc[:, data.columns.isin(features)]
+        if y is None:
+            return X.loc[:, X.columns.isin(self.features)]
+        return X.loc[:, X.columns.isin(self.features)], y
 
 ################################################################################################
 # LASSO FEATURE SELECTION
@@ -165,21 +153,18 @@ class LassoSelectionStep():
         self.features = None
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label'):
-        X_data, y_data = split_x_y(data, y_label=y_label)
-
+    def fit(self, X, y=None):
         embeded_lr_selector = SelectFromModel(Lasso(**self.lasso_kwargs), **self.select_kwargs)
-        embeded_lr_selector.fit(X_data, y_data)
+        embeded_lr_selector.fit(X, y)
 
         embeded_lr_support = embeded_lr_selector.get_support()
-        self.features = X_data.loc[:, embeded_lr_support].columns.tolist()
-        return self.transform(data, y_label=y_label)
+        self.features = X.loc[:, embeded_lr_support].columns.tolist()
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.features is None:
             raise TransformError
         
-        if y_label in data.columns:
-            self.features.append(y_label)
-            return data.loc[:, data.columns.isin(self.features)]
-        return data.loc[:, data.columns.isin(self.features)]
+        if y is None:
+            return X.loc[:, X.columns.isin(self.features)]
+        return X.loc[:, X.columns.isin(self.features)], y

@@ -2,7 +2,6 @@
 from DSPipeline.ds_pipeline import Pipeline
 from DSPipeline.data_transformations import StandardScalerStep
 from DSPipeline.feature_selection import PearsonCorrStep
-from DSPipeline.data_managing import split_x_y
 from DSPipeline.outlier_detection import ABODStep
 
 # Other Imports
@@ -17,16 +16,16 @@ from sklearn.linear_model import LinearRegression
 boston = load_boston()
 y_label = "MEDV"    # The traditional name for Boston's target value
 
-X_data = pd.DataFrame(boston.data, columns=boston.feature_names)
-y_data = pd.DataFrame(boston.target, columns=[y_label])
-data = pd.concat((X_data, y_data), axis=1)
+X = pd.DataFrame(boston.data, columns=boston.feature_names)
+y = pd.Series(boston.target, name=y_label)
 
 # Split into test and train. 
 # NOTE: Resetting the indices is very important and not doing so will result in errors
-train, test = train_test_split(data)
-train = train.reset_index(drop=True)
-test = test.reset_index(drop=True)
-test_X, test_y = split_x_y(test, y_label=y_label)
+train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.33)
+train_X = train_X.reset_index(drop=True)
+test_X = test_X.reset_index(drop=True)
+train_y = train_y.reset_index(drop=True)
+test_y = test_y.reset_index(drop=True)
 
 # Create Steps
 scale_step = StandardScalerStep()
@@ -38,12 +37,11 @@ pipeline_steps = [scale_step, abod_step, corr_step]
 pipeline = Pipeline(pipeline_steps)
 
 # Transform data sets
-train_transformed = pipeline.fit_transform(train, y_label=y_label)
+train_X_transformed, train_y_transformed = pipeline.fit_transform(train_X, train_y)
 test_X_transformed = pipeline.transform(test_X, allow_sample_removal=False)
 
 # Use data to make predictions
-train_X, train_y = split_x_y(train_transformed, y_label=y_label)
 model = LinearRegression()
-model.fit(train_X, train_y)
+model.fit(train_X_transformed, train_y_transformed)
 y_hat = model.predict(test_X_transformed)
 print(f'MAE: {mean_absolute_error(test_y, y_hat):.3f}')

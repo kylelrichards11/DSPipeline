@@ -32,22 +32,28 @@ class StepTest(object):
 
         # Make sure that transform fails if fit has not been called
         with self.assertRaises(TransformError):
-            self.step.transform(self.train_data)
+            self.step.transform(self.X, y=self.y)
 
-        # Make sure both fit and transform return a DataFrame    
-        fit_result = self.step.fit(self.train_data)
-        new_train = self.step.transform(self.train_data)
-        self.assertEqual(type(fit_result), pd.DataFrame)
-        self.assertEqual(type(new_train), pd.DataFrame)
+        # Make sure both fit and transform return a DataFrame
+        if self.y is None:
+            f_result_X = self.step.fit(self.X)
+            t_result_X = self.step.transform(self.X)
+            self.assertEqual(type(f_result_X), pd.DataFrame)
+            self.assertEqual(type(t_result_X), pd.DataFrame)
+        else:
+            f_result_X, f_result_y = self.step.fit(self.X, y=self.y)
+            t_result_X, t_result_y = self.step.transform(self.X, y=self.y)
+            self.assertEqual(type(f_result_X), pd.DataFrame)
+            self.assertEqual(type(t_result_X), pd.DataFrame)
 
         # Test test data transform if applicable
         if not self.step.changes_num_samples:
-            new_test = self.step.transform(self.test_data)
-            self.assertTrue(type(new_train) == pd.DataFrame)
+            new_test = self.step.transform(self.test_X)
+            self.assertEqual(type(new_test), pd.DataFrame)
 
         # If the test appends, check that the returned data frame has more columns than the original
         if hasattr(self.step, 'append_input'):
             if(self.step.append_input):
-                self.assertGreater(new_train.shape[1], self.train_data.shape[1])
+                self.assertGreater(t_result_X.shape[1], self.X.shape[1])
                 if not self.step.changes_num_samples:
-                    self.assertGreater(new_test.shape[1], self.test_data.shape[1])
+                    self.assertGreater(new_test.shape[1], self.test_X.shape[1])

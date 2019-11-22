@@ -30,15 +30,15 @@ fit()
 
 .. code-block:: python
 
-    .fit(self, data, y_label='label')
+    .fit(self, X, y=None)
 
-+---------------+----------------+-------------------------------------------------------------------------+
-| **Parameter** | **Type**       | **Description**                                                         |
-+===============+================+=========================================================================+
-| data          | *pd.DataFrame* | Training data with labels                                               |
-+---------------+----------------+-------------------------------------------------------------------------+
-| y_label       | *str*          | Name of the column in data with the known label or value for the sample |
-+---------------+----------------+-------------------------------------------------------------------------+
++---------------+----------------+-----------------+
+| **Parameter** | **Type**       | **Description** |
++===============+================+=================+
+| X             | *pd.DataFrame* | Training data   |
++---------------+----------------+-----------------+
+| y             | *pd.DataFrame* | Target values   |
++---------------+----------------+-----------------+
 
 **Returns**: *pd.DataFrame*
 
@@ -47,15 +47,15 @@ transform()
 
 .. code-block:: python
 
-    .transform(self, data, y_label='label')
+    .transform(self, X, y=None)
 
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Parameter**          | **Type**       | **Description**                                                                                                                                               |
-+========================+================+===============================================================================================================================================================+
-| data                   | *pd.DataFrame* | Data (with or without labels)                                                                                                                                 |
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| y_label                | *str*          | Name of the column in data with the known label or value for the sample. If the data is unlabeled (test data) then input what the label of the train data is. |
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
++----------------+----------------+-----------------+
+| **Parameter**  | **Type**       | **Description** |
++================+================+=================+
+| X              | *pd.DataFrame* | Training data   |
++----------------+----------------+-----------------+
+| y              | *pd.DataFrame* | Target values   |
++----------------+----------------+-----------------+
 
 **Returns**: *pd.DataFrame*
 
@@ -69,8 +69,8 @@ Example
     import pandas as pd
     from DSPipeline.data_transformations import LDATransformStep
 
-    X_data = pd.DataFrame(np.random.uniform(size=(50, 4)), columns=['x1', 'x2', 'x3', 'x4'])
-    y_data = pd.DataFrame(np.random.randint(3, size=(50, 1)), columns=['y'])
-    data = pd.concat((X_data, y_data), axis=1)
+    X = pd.DataFrame(np.random.uniform(size=(20, 4)), columns=['x1', 'x2', 'x3', 'x4'])
+    y = pd.Series(np.random.randint(3, size=20), name='y')
+
     lda_step = LDATransformStep(append_input=True, kwargs={'n_components':2})
-    data_with_lda = lda_step.fit(data, y_label='y')
+    new_X, new_y = lda_step.fit(X, y)

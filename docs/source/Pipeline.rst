@@ -27,17 +27,17 @@ fit()
 
 .. code-block:: python
 
-    .fit(self, data, y_label='label', verbose=False)
+    .fit(self, X, y=None, verbose=False)
 
-+---------------+----------------+-------------------------------------------------------------------------+
-| **Parameter** | **Type**       | **Description**                                                         |
-+===============+================+=========================================================================+
-| data          | *pd.DataFrame* | Training data with labels                                               |
-+---------------+----------------+-------------------------------------------------------------------------+
-| y_label       | *str*          | Name of the column in data with the known label or value for the sample |
-+---------------+----------------+-------------------------------------------------------------------------+
-| verbose       | *bool*         | Whether or not to output progress of fitting the pipeline               |
-+---------------+----------------+-------------------------------------------------------------------------+
++---------------+----------------+-----------------------------------------------------------+
+| **Parameter** | **Type**       | **Description**                                           |
++===============+================+===========================================================+
+| X             | *pd.DataFrame* | Training data                                             |
++---------------+----------------+-----------------------------------------------------------+
+| y             | *pd.DataFrame* | Target values                                             |
++---------------+----------------+-----------------------------------------------------------+
+| verbose       | *bool*         | Whether or not to output progress of fitting the pipeline |
++---------------+----------------+-----------------------------------------------------------+
 
 **Returns**: *None* or *pd.DataFrame*
 
@@ -46,19 +46,19 @@ transform()
 
 .. code-block:: python
 
-    .transform(self, data, y_label='label', allow_sample_removal=True, verbose=False)
+    .transform(self, X, y=None, allow_sample_removal=True, verbose=False)
 
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| **Parameter**          | **Type**       | **Description**                                                                                                                                               |
-+========================+================+===============================================================================================================================================================+
-| data                   | *pd.DataFrame* | Data (with or without labels)                                                                                                                                 |
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| y_label                | *str*          | Name of the column in data with the known label or value for the sample. If the data is unlabeled (test data) then input what the label of the train data is. |
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| allow_sample_removal   | *bool*         | Whether or not the pipeline is allowed to remove any samples from the data frame. Generally this is okay in train data and not okay in test data.             |
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
-| verbose                | *bool*         | Whether or not to output progress of fitting the pipeline                                                                                                     |
-+------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------+
++------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
+| **Parameter**          | **Type**       | **Description**                                                                                                                                   |
++========================+================+===================================================================================================================================================+
+| X                      | *pd.DataFrame* | Training data                                                                                                                                     |
++------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
+| y                      | *pd.DataFrame* | Target values                                                                                                                                     |
++------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
+| allow_sample_removal   | *bool*         | Whether or not the pipeline is allowed to remove any samples from the data frame. Generally this is okay in train data and not okay in test data. |
++------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
+| verbose                | *bool*         | Whether or not to output progress of fitting the pipeline                                                                                         |
++------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
 
 **Returns**: *pd.DataFrame*
 
@@ -67,14 +67,14 @@ fit_transform()
 
 .. code-block:: python
 
-    .fit_transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
+    .fit_transform(self, X, y=None, allow_sample_removal=True, verbose=False):
 
 +------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
 | **Parameter**          | **Type**       | **Description**                                                                                                                                   |
 +========================+================+===================================================================================================================================================+
-| data                   | *pd.DataFrame* | Training data with labels                                                                                                                         |
+| X                      | *pd.DataFrame* | Training data                                                                                                                                     |
 +------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
-| y_label                | *str*          | Name of the column in data with the known label or value for the sample                                                                           |
+| y                      | *pd.DataFrame* | Target values                                                                                                                                     |
 +------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
 | allow_sample_removal   | *bool*         | Whether or not the pipeline is allowed to remove any samples from the data frame. Generally this is okay in train data and not okay in test data. |
 +------------------------+----------------+---------------------------------------------------------------------------------------------------------------------------------------------------+
@@ -90,44 +90,48 @@ Example
 
     # DSPipeline Imports
     from DSPipeline.ds_pipeline import Pipeline
-    from DSPipeline.data_transformations import StandardScalerStep, PCAStep, PolyStep
+    from DSPipeline.data_transformations import StandardScalerStep
     from DSPipeline.feature_selection import PearsonCorrStep
-    from DSPipeline.data_managing import split_x_y
+    from DSPipeline.outlier_detection import ABODStep
 
     # Other Imports
     import numpy as np
     import pandas as pd
     from sklearn.datasets import load_boston
     from sklearn.model_selection import train_test_split
+    from sklearn.metrics import mean_absolute_error
+    from sklearn.linear_model import LinearRegression
 
     # Load Data
     boston = load_boston()
     y_label = "MEDV"    # The traditional name for Boston's target value
 
-    X_data = pd.DataFrame(boston.data, columns=boston.feature_names)
-    y_data = pd.DataFrame(boston.target, columns=[y_label])
-    data = pd.concat((X_data, y_data), axis=1)
+    X = pd.DataFrame(boston.data, columns=boston.feature_names)
+    y = pd.Series(boston.target, name=y_label)
 
-    # Split into test and train. 
+    # Split into test and train.
     # NOTE: Resetting the indices is very important and not doing so will result in errors
-    train, test = train_test_split(data)
-    train = train.reset_index(drop=True)
-    test = test.reset_index(drop=True)
-    test_X, test_y = split_x_y(test, y_label=y_label)
+    train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.33)
+    train_X = train_X.reset_index(drop=True)
+    test_X = test_X.reset_index(drop=True)
+    train_y = train_y.reset_index(drop=True)
+    test_y = test_y.reset_index(drop=True)
 
     # Create Steps
     scale_step = StandardScalerStep()
-    corr_step = PearsonCorrStep(0.10)
-    pca_step = PCAStep(kwargs={'n_components' : 5})
-    poly_step = PolyStep(kwargs={'degree':3, 'include_bias':False})
-
-    # This step will compute 5 principal components and then do polynomial transformations
-    # On those 5 principal components. Then it will append that result to the input data
-    pipeline_step = Pipeline([pca_step, poly_step], append_input=True)
+    abod_step = ABODStep(num_remove=5, kwargs={'contamination':0.05})
+    corr_step = PearsonCorrStep(num_features=0.25)
 
     # Make Pipeline
-    pipeline = Pipeline([scale_step, pipeline_step, corr_step])
+    pipeline_steps = [scale_step, abod_step, corr_step]
+    pipeline = Pipeline(pipeline_steps)
 
     # Transform data sets
-    train_transformed = pipeline.fit_transform(train, y_label=y_label)
+    train_X_transformed, train_y_transformed = pipeline.fit_transform(train_X, train_y)
     test_X_transformed = pipeline.transform(test_X, allow_sample_removal=False)
+
+    # Use data to make predictions
+    model = LinearRegression()
+    model.fit(train_X_transformed, train_y_transformed)
+    y_hat = model.predict(test_X_transformed)
+    print(f'MAE: {mean_absolute_error(test_y, y_hat):.3f}')

@@ -12,12 +12,11 @@ Documentation can be found at [https://dspipeline.readthedocs.io/en/latest/](htt
 
 ## Example Use
 ```python
-# DS_Pipeline Imports
-from DSPipeline.data_managing import split_x_y
-from DSPipeline.data_transformations import StandardScalerStep
-from DSPipeline.outlier_detection import ABODStep
-from DSPipeline.feature_selection import PearsonCorrStep
+# DSPipeline Imports
 from DSPipeline.ds_pipeline import Pipeline
+from DSPipeline.data_transformations import StandardScalerStep
+from DSPipeline.feature_selection import PearsonCorrStep
+from DSPipeline.outlier_detection import ABODStep
 
 # Other Imports
 import numpy as np
@@ -31,16 +30,16 @@ from sklearn.linear_model import LinearRegression
 boston = load_boston()
 y_label = "MEDV"    # The traditional name for Boston's target value
 
-X_data = pd.DataFrame(boston.data, columns=boston.feature_names)
-y_data = pd.DataFrame(boston.target, columns=[y_label])
-data = pd.concat((X_data, y_data), axis=1)
+X = pd.DataFrame(boston.data, columns=boston.feature_names)
+y = pd.Series(boston.target, name=y_label)
 
 # Split into test and train. 
 # NOTE: Resetting the indices is very important and not doing so will result in errors
-train, test = train_test_split(data)
-train = train.reset_index(drop=True)
-test = test.reset_index(drop=True)
-test_X, test_y = split_x_y(test, y_label=y_label)
+train_X, test_X, train_y, test_y = train_test_split(X, y, test_size=0.33)
+train_X = train_X.reset_index(drop=True)
+test_X = test_X.reset_index(drop=True)
+train_y = train_y.reset_index(drop=True)
+test_y = test_y.reset_index(drop=True)
 
 # Create Steps
 scale_step = StandardScalerStep()
@@ -52,13 +51,12 @@ pipeline_steps = [scale_step, abod_step, corr_step]
 pipeline = Pipeline(pipeline_steps)
 
 # Transform data sets
-train_transformed = pipeline.fit_transform(train, y_label=y_label)
+train_X_transformed, train_y_transformed = pipeline.fit_transform(train_X, train_y)
 test_X_transformed = pipeline.transform(test_X, allow_sample_removal=False)
 
 # Use data to make predictions
-train_X, train_y = split_x_y(train_transformed, y_label=y_label)
 model = LinearRegression()
-model.fit(train_X, train_y)
+model.fit(train_X_transformed, train_y_transformed)
 y_hat = model.predict(test_X_transformed)
 print(f'MAE: {mean_absolute_error(test_y, y_hat):.3f}')
 ```
@@ -68,7 +66,7 @@ To add a step, first create a class for it in the appropriate file.
 
 The constructor must contain all information that needs to be remembered to recreate the step. All step specific arguments must pass through here. Additionally, a field stating that the model has been fitted must be created. This is used in the `transform` function to throw a `TransformError` if the step has not been previously fitted. Finally `self.changes_num_samples` specifies whether or not running this step will add or remove data samples. Generally this is okay for training data but not for testing data.
 
-`fit` and `transform` methods must be created, each of which must have the signature `func(self, data, y_label='label')`. `fit` should take care of anything that is done based on the train data, while `transform` needs to be able to run on any input data set. Note that when `transform` is called on a test set, there are no labels. The `fit` function must also return the transformed data because when fitting in the pipeline, each step must be fitted to the output from the previous steps. Therefore in order to fit a step, the data must have been transformed by the previous steps. 
+`fit` and `transform` methods must be created, each of which must have the signature `func(self, X, y=None)`. `fit` should take care of anything that is done based on the train data, while `transform` needs to be able to run on any input data set. Note that when `transform` is called on a test set, there are no labels. The `fit` function must also return the transformed data because when fitting in the pipeline, each step must be fitted to the output from the previous steps. Therefore in order to fit a step, the data must have been transformed by the previous steps. 
 
 ## Example Adding
 ```python
@@ -85,34 +83,33 @@ class SelectAStep():
         self.changes_num_samples = False
         self.features = None
 
-    def fit(self, data, y_label='y'):
-        features = [col for col in list(data.columns) if 'a' in col] 
-        # Make sure we don't drop the label!
-        if y_label not in features:
-            features.append(y_label)
+    def fit(self, X, y=None):
+        features = [col for col in list(X.columns) if 'a' in col] 
         self.features = features
-        return self.transform(data, y_label=y_label)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='y'):
+    def transform(self, X, y=None):
         if self.features is None:
             raise TransformError
-        return data[self.features]
+        if y is None:
+            return X[self.features]
+        return X[self.features], y
 
-# MAIN
+
 if __name__ == "__main__":
     
     # Create Data
     shape = (5, 10)
-    data = np.random.uniform(low=0, high=10, size=shape)
-    cols = ['apple', 'banana', 'cucumber', 'date', 'eggplant', 'fennel', 'grape', 'honeydew', 'iceberg_lettuce', 'y']
-    data = pd.DataFrame(data, columns=cols)
+    X = np.random.uniform(low=0, high=10, size=shape)
+    cols = ['apple', 'banana', 'cucumber', 'date', 'eggplant', 'fennel', 'grape', 'honeydew', 'iceberg_lettuce', 'jalepeno']
+    X = pd.DataFrame(X, columns=cols)
 
     # Create Pipeline
     pipeline = Pipeline([SelectAStep()])
 
     # Run Pipeline
-    new_data = pipeline.fit_transform(data, y_label='y', verbose=True)
-    print(new_data)
+    new_X = pipeline.fit_transform(X, verbose=True)
+    print(new_X)
 ```
 
 ### Output

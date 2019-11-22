@@ -8,7 +8,7 @@ Splits the input data frame into X and y components.
 
 .. code-block:: python
 
-    split_x_y(data, y_label='label')
+    split_x_y(X, y=None)
 
 
 **Parameters**

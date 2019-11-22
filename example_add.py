@@ -11,31 +11,30 @@ class SelectAStep():
         self.changes_num_samples = False
         self.features = None
 
-    def fit(self, data, y_label='y'):
-        features = [col for col in list(data.columns) if 'a' in col] 
-        # Make sure we don't drop the label!
-        if y_label not in features:
-            features.append(y_label)
+    def fit(self, X, y=None):
+        features = [col for col in list(X.columns) if 'a' in col] 
         self.features = features
-        return self.transform(data, y_label=y_label)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='y'):
+    def transform(self, X, y=None):
         if self.features is None:
             raise TransformError
-        return data[self.features]
+        if y is None:
+            return X[self.features]
+        return X[self.features], y
 
-# MAIN
+
 if __name__ == "__main__":
     
     # Create Data
     shape = (5, 10)
-    data = np.random.uniform(low=0, high=10, size=shape)
-    cols = ['apple', 'banana', 'cucumber', 'date', 'eggplant', 'fennel', 'grape', 'honeydew', 'iceberg_lettuce', 'y']
-    data = pd.DataFrame(data, columns=cols)
+    X = np.random.uniform(low=0, high=10, size=shape)
+    cols = ['apple', 'banana', 'cucumber', 'date', 'eggplant', 'fennel', 'grape', 'honeydew', 'iceberg_lettuce', 'jalepeno']
+    X = pd.DataFrame(X, columns=cols)
 
     # Create Pipeline
     pipeline = Pipeline([SelectAStep()])
 
     # Run Pipeline
-    new_data = pipeline.fit_transform(data, y_label='y', verbose=True)
-    print(new_data)
+    new_X = pipeline.fit_transform(X, verbose=True)
+    print(new_X)

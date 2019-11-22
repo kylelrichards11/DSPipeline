@@ -20,12 +20,12 @@ class ABODStep():
         self.fitted = None
         self.changes_num_samples = True
 
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
         abod = ABOD(**self.kwargs)
-        self.fitted = abod.fit(data)
-        return data
+        self.fitted = abod.fit(X)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted is None:
             raise TransformError
         
@@ -34,9 +34,13 @@ class ABODStep():
 
         # Remove outliers
         rm_index = scores.head(self.num_remove).index
-        data = data.drop(index=rm_index)
+        X = X.drop(index=rm_index).reset_index(drop=True)
 
-        return data.reset_index(drop=True)
+        if y is None:
+            return X
+
+        y = y.drop(index=rm_index).reset_index(drop=True)
+        return X, y 
 
 ################################################################################################
 # ISOLATION FOREST
@@ -50,31 +54,29 @@ class IsoForestStep():
         self.changes_num_samples = True
         self.fitted = None
 
-    def fit(self, data, y_label='label'):
-        iso = IsolationForest(**self.kwargs)
-        if self.include_y:
-            self.fitted = iso.fit(data)
-        else:
-            X_data, _ = split_x_y(data, y_label=y_label)
-            self.fitted = iso.fit(X_data)
-        return data
+    def fit(self, X, y=None):
+        self.fitted = IsolationForest(**self.kwargs)
+        self.fitted.fit(X, y)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted is None:
             raise TransformError
 
-        if self.include_y:
-            outlier_labels = self.fitted.predict(data)
-        else:
-            X_data, _ = split_x_y(data, y_label=y_label)
-            outlier_labels = self.fitted.predict(X_data)
+        outlier_labels = self.fitted.predict(X)
 
         # Remove outliers from data
         for i in range(outlier_labels.shape[0]):
             if outlier_labels[i] == -1:
-                data = data.drop(index=i)
+                X = X.drop(index=i)
+                if y is not None:
+                    y = y.drop(index=i)
+
+        if y is None:
+            return X.reset_index(drop=True)
         
-        return data.reset_index(drop=True)
+        y = y.reset_index(drop=True)
+        return X.reset_index(drop=True), y
 
 ################################################################################################
 # LOCAL OUTLIER FACTOR
@@ -88,23 +90,25 @@ class LOFStep():
         self.fitted = None
         self.changes_num_samples = True
 
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
         self.fitted = LocalOutlierFactor(**self.kwargs)
-        return data
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted is None:
             raise TransformError
 
-        if self.include_y:
-            outlier_labels = self.fitted.fit_predict(data)
-        else:
-            X_data, _ = split_x_y(data, y_label=y_label)
-            outlier_labels = self.fitted.fit_predict(X_data)
+        outlier_labels = self.fitted.fit_predict(X, y)
 
         # Remove outliers from data
         for i in range(outlier_labels.shape[0]):
             if outlier_labels[i] == -1:
-                data = data.drop(index=i)
+                X = X.drop(index=i)
+                if y is not None:
+                    y = y.drop(index=i)
         
-        return data.reset_index(drop=True)
+        if y is None:
+            return X.reset_index(drop=True)
+        
+        y = y.reset_index(drop=True)
+        return X.reset_index(drop=True), y

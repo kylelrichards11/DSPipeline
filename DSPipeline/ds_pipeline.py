@@ -16,55 +16,63 @@ class Pipeline():
         self.description = f"Pipeline Step with {[s.description for s in steps]}"
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label', verbose=False):
-        new_data = data
+    def fit(self, X, y=None, verbose=False):
+        new_X = X.copy()
         for step in self.steps:
             if verbose:
                 print(f'Fitting {step.description}')
-            new_data = step.fit(new_data, y_label=y_label)
+            if y is None:
+                new_X = step.fit(new_X)
+            else:
+                new_X, y = step.fit(new_X, y=y)
         if self.append_input:
-            appended = pd.concat((data, new_data), axis=1)
-            if y_label in appended.columns:
-                y = appended[y_label].iloc[:, 0]
-                appended = appended.drop(columns=[y_label])
-                appended = pd.concat((appended, y), axis=1)
-            return appended
-        return new_data
+            if y is None:
+                return pd.concat((X, new_X), axis=1)
+            return pd.concat((X, new_X), axis=1), y
+        if y is None:
+            return new_X
+        return new_X, y
 
-    def transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
-        new_data = data
+    def transform(self, X, y=None, allow_sample_removal=True, verbose=False):
+        new_X = X.copy()
         for step in self.steps:
             if not allow_sample_removal and step.changes_num_samples:
                 continue
             if verbose:
                 print(f'Transforming {step.description}')
-            new_data = step.transform(new_data, y_label=y_label)
+            if y is None:
+                new_X = step.transform(new_X)
+            else:
+                new_X, y = step.transform(new_X, y=y)
         if self.append_input:
-            appended = pd.concat((data, new_data), axis=1)
-            if y_label in appended.columns:
-                y = appended[y_label].iloc[:, 0]
-                appended = appended.drop(columns=[y_label])
-                appended = pd.concat((appended, y), axis=1)
-            return appended
-        return new_data
+            if y is None:
+                return pd.concat((X, new_X), axis=1)
+            return pd.concat((X, new_X), axis=1), y
+        if y is None:
+            return new_X
+        return new_X, y
 
-    def fit_transform(self, data, y_label='label', allow_sample_removal=True, verbose=False):
-        self.fit(data, y_label=y_label, verbose=verbose)
-        return self.transform(data, y_label=y_label, allow_sample_removal=allow_sample_removal, verbose=verbose)
+    def fit_transform(self, X, y=None, allow_sample_removal=True, verbose=False):
+        self.fit(X, y=y, verbose=verbose)
+        return self.transform(X, y=y, allow_sample_removal=allow_sample_removal, verbose=verbose)
 
 ################################################################################################
 # An empty step to do nothing with the data
 class EmptyStep():
-    def __init__(self, append_input=False):
+    def __init__(self):
         self.description = "Empty Step"
         self.changes_num_samples = False
         self.fitted = False
 
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
         self.fitted = True
-        return data
+        if y is None:
+            return X
+        return X, y
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted:
-            return data
+            if y is None:
+                return X
+            return X, y
         raise TransformError

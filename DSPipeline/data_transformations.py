@@ -21,36 +21,26 @@ class StandardScalerStep():
         self.fitted = None
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label'):
-        if y_label in data.columns:
-            X_data, y_data = split_x_y(data, y_label=y_label)
-        else:
-            X_data = data
-            y_data = None
+    def fit(self, X, y=None):
         scaler = StandardScaler(**self.kwargs)  
-        self.fitted = scaler.fit(X_data)
-        return self.transform(data, y_label=y_label)
+        self.fitted = scaler.fit(X)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted is None:
             raise TransformError
 
-        if y_label in data.columns:
-            X_data, y_data = split_x_y(data, y_label=y_label)
-        else:
-            X_data = data
-            y_data = None
-
-        X_scaled = pd.DataFrame(self.fitted.transform(X_data), columns=X_data.columns)
+        X_scaled = pd.DataFrame(self.fitted.transform(X), columns=X.columns)
         if self.append_input:
             new_cols = []
             for col in X_scaled.columns:
                 new_cols.append(col + "_scaled")
             X_scaled.columns = new_cols
-            X_scaled = pd.concat((data, X_scaled), axis=1)
-        if y_data is not None:
-            return pd.concat((X_scaled, y_data), axis=1)
-        return X_scaled
+            X_scaled = pd.concat((X, X_scaled), axis=1)
+        
+        if y is None:
+            return X_scaled
+        return X_scaled, y
 
 ################################################################################################
 # PCA
@@ -65,29 +55,16 @@ class PCAStep():
         self.fitted = None
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label'):
-
-        if y_label in data.columns:
-            X_data, y_data = split_x_y(data, y_label=y_label)
-        else:
-            X_data = data
-            y_data = None
-
+    def fit(self, X, y=None):
         pca_model = PCA(**self.kwargs)
-        self.fitted = pca_model.fit(X_data)
-        return self.transform(data, y_label=y_label)
+        self.fitted = pca_model.fit(X)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted is None:
             raise TransformError
-        
-        if y_label in data.columns:
-            X_data, y_data = split_x_y(data, y_label=y_label)
-        else:
-            X_data = data
-            y_data = None
 
-        pca_data = self.fitted.transform(X_data)
+        pca_data = self.fitted.transform(X)
         
         # Get column names for post pca dataframe
         cols = []
@@ -96,10 +73,12 @@ class PCAStep():
 
         # Return pca data with or without appending
         if self.append_input:
-            return pd.concat((data, pd.DataFrame(pca_data, columns=cols)), axis=1)
-        if y_data is None:
+            if y is None:
+                return pd.concat((X, pd.DataFrame(pca_data, columns=cols)), axis=1)
+            return pd.concat((X, pd.DataFrame(pca_data, columns=cols)), axis=1), y
+        if y is None:
             return pd.DataFrame(pca_data, columns=cols)
-        return pd.concat((y_data, pd.DataFrame(pca_data, columns=cols)), axis=1)
+        return pd.DataFrame(pca_data, columns=cols), y
 
 ################################################################################################
 # POLYNOMIAL INTERACTIONS FEATURES
@@ -115,36 +94,27 @@ class PolyStep():
         self.fitted = None
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label'):
-
-        # Split data from labels (don't want interaction with labels)
-        X_data, _ = split_x_y(data, y_label=y_label)
-
+    def fit(self, X, y=None):
         poly = PolynomialFeatures(**self.kwargs)
-        self.fitted = poly.fit(X_data)
-        return self.transform(data, y_label=y_label)
+        self.fitted = poly.fit(X)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted is None:
             raise TransformError
 
-        if y_label in data.columns:
-            X_data, y_data = split_x_y(data, y_label=y_label)
-        else:
-            X_data = data
-            y_data = None
-
-        poly_data = self.fitted.transform(X_data)
-        cols = self.fitted.get_feature_names(X_data.columns)
+        poly_data = self.fitted.transform(X)
+        cols = self.fitted.get_feature_names(X.columns)
         cols = [c.replace(' ', '*') for c in cols]
 
         if self.append_input:
-            return pd.concat((data, pd.DataFrame(poly_data, columns=cols)), axis=1)
-        
-        if y_data is not None:
-            return pd.concat((y_data, pd.DataFrame(poly_data, columns=cols)), axis=1)
+            if y is None:
+                return pd.concat((X, pd.DataFrame(poly_data, columns=cols)), axis=1)
+            return pd.concat((X, pd.DataFrame(poly_data, columns=cols)), axis=1), y
 
-        return pd.DataFrame(poly_data, columns=cols)
+        if y is None:
+            return pd.DataFrame(poly_data, columns=cols)
+        return pd.DataFrame(poly_data, columns=cols), y
 
 ################################################################################################
 # SINE FEATURES
@@ -161,24 +131,18 @@ class SinStep():
         self.changes_num_samples = False
         self.kwargs = kwargs
     
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
         self.fitted = True
-        return self.transform(data, y_label=y_label)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if not self.fitted:
             raise TransformError
         
         if self.columns is None:
-            temp = data.copy()
+            temp_X = X.copy()
         else:
-            temp = data[self.columns]
-
-        if y_label in temp.columns:
-            temp_X, temp_y = split_x_y(temp, y_label=y_label)
-        else:
-            temp_X = temp
-            temp_y = None
+            temp_X = X[self.columns]
 
         sin_data = np.sin(temp_X, **self.kwargs)
         new_cols = []
@@ -186,13 +150,14 @@ class SinStep():
             new_cols.append('sin_' + c)
         sin_data.columns = new_cols
         
-        if self.append_input:   
-            return pd.concat((data, sin_data), axis=1)
+        if self.append_input:
+            if y is None:
+                return pd.concat((X, sin_data), axis=1)
+            return pd.concat((X, sin_data), axis=1), y
 
-        if temp_y is not None:
-            return pd.concat((sin_data, temp_y), axis=1)
-
-        return sin_data
+        if y is None:
+            return sin_data
+        return sin_data, y
 
 ################################################################################################
 # LOG FEATURES
@@ -209,38 +174,33 @@ class LogStep():
             self.changes_num_samples = False
             self.log_func = log_func
         
-    def fit(self, data, y_label='label'):
+    def fit(self, X, y=None):
         self.fitted = True
-        return self.transform(data, y_label=y_label)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if not self.fitted:
             raise TransformError
         
         if self.columns is None:
-            temp = data.copy()
+            temp_X = X.copy()
         else:
-            temp = data[self.columns]
+            temp_X = X[self.columns]
 
-        if y_label in temp.columns:
-            temp_X, temp_y = split_x_y(temp, y_label=y_label)
-        else:
-            temp_X = temp
-            temp_y = None
-
-        log_data = self.log_func(temp)
+        log_data = self.log_func(temp_X)
         new_cols = []
         for c in log_data.columns:
             new_cols.append('log_' + c)
         log_data.columns = new_cols
         
         if self.append_input:   
-            return pd.concat((data, log_data), axis=1)
+            if y is None:
+                return pd.concat((X, log_data), axis=1)
+            return pd.concat((X, log_data), axis=1), y
 
-        if temp_y is not None:
-            return pd.concat((log_data, temp_y), axis=1)
-
-        return log_data
+        if y is None:
+            return log_data
+        return log_data, y
 
 ################################################################################################
 # LDA TRANSFORMATION
@@ -256,23 +216,16 @@ class LDATransformStep():
         self.fitted = None
         self.changes_num_samples = False
 
-    def fit(self, data, y_label='label'):
-        X_data, y_data = split_x_y(data, y_label=y_label)
+    def fit(self, X, y=None):
         lda = LinearDiscriminantAnalysis(**self.kwargs)
-        self.fitted = lda.fit(X_data, y_data)
-        return self.transform(data, y_label=y_label)
+        self.fitted = lda.fit(X, y)
+        return self.transform(X, y=y)
 
-    def transform(self, data, y_label='label'):
+    def transform(self, X, y=None):
         if self.fitted is None:
             raise TransformError
 
-        if y_label in data.columns:
-            X_data, y_data = split_x_y(data, y_label=y_label)
-        else:
-            X_data = data
-            y_data = None
-
-        lda_data = self.fitted.transform(X_data)
+        lda_data = self.fitted.transform(X)
         
         lda_cols = []
         for i in range(1, lda_data.shape[1]+1):
@@ -281,9 +234,10 @@ class LDATransformStep():
         lda_data = pd.DataFrame(lda_data, columns=lda_cols)
 
         if self.append_input:
-            return pd.concat((data, lda_data), axis=1)
-        
-        if y_data is None:
-            return lda_data
+            if y is None:
+                return pd.concat((X, lda_data), axis=1)
+            return pd.concat((X, lda_data), axis=1), y
 
-        return pd.concat((lda_data, y_data), axis=1)
+        if y is None:
+            return lda_data
+        return lda_data, y
