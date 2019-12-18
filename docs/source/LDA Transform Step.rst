@@ -8,7 +8,7 @@ The LDA Step applies linear discriminant analysis to the given data with sklearn
 
 .. code-block:: python
 
-    DSPipeline.data_transformations.LDAStep(self, append_input=False, kwargs={})
+    DSPipeline.data_transformations.LDATransformStep(self, append_input=False, kwargs={})
 
 Parameters
 ----------
