@@ -13,20 +13,48 @@ from .errors import TransformError
 ################################################################################################
 ## LIST FEATURE SELECTION
 ################################################################################################
-# Selects based on the given list of features
-
 class ListSelectionStep():
     def __init__(self, features):
-        self.description = 'Select features: ' + str(features)
+        """ Selects columns based on a given list of columns to keep.
+        
+        Parameters
+        ----------
+        features (list) : List of columns to keep. The y_label column is always kept.
+        """
+        self.description = f'Select features: {str(features)}'
         self.features = features
         self.changes_num_samples = False
         self.fitted = False
 
     def fit(self, X, y=None):
+        """ Sets the step as fitted. Does not actually fit anything since this feature selection is not specific to the data
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         self.fitted = True
         return self.transform(X, y=y)
 
     def transform(self, X, y=None):
+        """ Transforms the given data using the previously fitted selection
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         if not self.fitted:
             raise TransformError
 
@@ -43,11 +71,20 @@ class ListSelectionStep():
             raise KeyError
 
 ################################################################################################
-## REGRESSION FOREST FEATURE SELECTION
+## TREE SELECTION
 ################################################################################################
-
 class TreeSelectionStep():
     def __init__(self, tree_model=ExtraTreesRegressor, tree_kwargs={'n_estimators':100}, select_kwargs={}):
+        """Uses a tree to select features. Uses sklearn’s ExtraTreesRegressor (default) and SelectFromModel classes.
+        
+        Parameters
+        ----------
+        tree_model (object) : the type of model to use as a tree. See https://scikit-learn.org/stable/modules/ensemble.html#ensemble for more
+
+        tree_kwargs (dict, default={}) : arguments to pass to the tree model initialization
+
+        select_kwargs (dict, default={}) : arguments to pass to sklearn's SelectFromModel class's initializiation
+        """
         self.description = 'Tree Feature Selection'
         self.tree_model = tree_model
         self.tree_kwargs = tree_kwargs
@@ -56,6 +93,18 @@ class TreeSelectionStep():
         self.features = None
 
     def fit(self, X, y=None):
+        """ Fits the selection on the given data
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         model = self.tree_model(**self.tree_kwargs)
         fitter = SelectFromModel(model, **self.select_kwargs)
 
@@ -70,6 +119,18 @@ class TreeSelectionStep():
         return self.transform(X, y=y)
 
     def transform(self, X, y=None):
+        """ Transforms the given data using the previously fitted selection
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         if self.features is None:
             raise TransformError
 
@@ -81,9 +142,16 @@ class TreeSelectionStep():
 ################################################################################################
 # PEARSON CORRELATION FEATURE SELECTION
 ################################################################################################
-
 class PearsonCorrStep():
     def __init__(self, num_features, kwargs={}):
+        """ Uses pearson’s correlation to select features. Uses pandas’s corr method. 
+        
+        Parameters
+        ----------
+        num_features (float) : Number of features to keep. If less than 1, then that is the minimum correlation value
+
+        kwargs (dict, default={}) : Arguments to pass to panda's corr method.
+        """
         self.description = "Pearson Correlation Feature Selection"
         self.num_features = num_features
         self.kwargs = kwargs
@@ -91,6 +159,18 @@ class PearsonCorrStep():
         self.changes_num_samples = False
 
     def fit(self, X, y=None):
+        """ Fits the selection on the given data
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         # if type(X) != type(pd.DataFrame()):
         #     y_label = 'y_column'
         #     X = pd.DataFrame(X)
@@ -109,6 +189,18 @@ class PearsonCorrStep():
         return self.transform(X, y=y)
 
     def transform(self, X, y=None):
+        """ Transforms the given data using the previously fitted selection
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         if self.features is None:
             raise TransformError
         if y is None:
@@ -118,15 +210,32 @@ class PearsonCorrStep():
 ################################################################################################
 # CHI SQUARED FEATURE SELECTION
 ################################################################################################
-
 class ChiSqSelectionStep():
     def __init__(self, select_kwargs={}):
+        """ Uses the chi squared test to select relevant features for classification tasks. Uses sklearn’s chi2 and SelectKBest classes.
+
+        Parameters
+        ----------
+        select_kwargs (dict, default={}) : arguments to pass to sklearn's SelectKBest class initialization
+        """
         self.description = "Chi Squared Feature Selection"
         self.select_kwargs = select_kwargs
         self.features = None
         self.changes_num_samples = False
 
     def fit(self, X, y=None):
+        """ Fits the selection on the given data
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         X_norm = pd.DataFrame(MinMaxScaler().fit_transform(X), columns=X.columns)
         chi_selector = SelectKBest(chi2, **self.select_kwargs)
         chi_selector.fit(X_norm, y)
@@ -135,6 +244,18 @@ class ChiSqSelectionStep():
         return self.transform(X, y=y)
 
     def transform(self, X, y=None):
+        """ Transforms the given data using the previously fitted selection
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         if self.features is None:
             raise TransformError
         if y is None:
@@ -144,9 +265,16 @@ class ChiSqSelectionStep():
 ################################################################################################
 # LASSO FEATURE SELECTION
 ################################################################################################
-
 class LassoSelectionStep():
     def __init__(self, lasso_kwargs={}, select_kwargs={}):
+        """ Uses lasso regularization to select features. Uses sklearn’s Lasso and SelectKBest classes. 
+        
+        Parameters
+        ----------
+        lasso_kwargs (dict, default={}) : arguments to pass to sklearn's Lasso class initializiation
+        
+        select_kwargs (dict, default={}) : arguments to pass to sklearn's SelectKBest class initializiation
+        """
         self.description = "Lasso Feature Selection"
         self.lasso_kwargs = lasso_kwargs
         self.select_kwargs = select_kwargs
@@ -154,6 +282,18 @@ class LassoSelectionStep():
         self.changes_num_samples = False
 
     def fit(self, X, y=None):
+        """ Fits the selection on the given data
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         embeded_lr_selector = SelectFromModel(Lasso(**self.lasso_kwargs), **self.select_kwargs)
         embeded_lr_selector.fit(X, y)
 
@@ -162,6 +302,18 @@ class LassoSelectionStep():
         return self.transform(X, y=y)
 
     def transform(self, X, y=None):
+        """ Transforms the given data using the previously fitted selection
+        
+        Parameters
+        ----------
+        X (DataFrame) : training data
+
+        y (DataFrame, default=None) : target values (if needed)
+
+        Returns
+        -------
+        (DataFrame, DataFrame) : A tuple of the transformed DataFrames, the first being the X data and the second being the y data
+        """
         if self.features is None:
             raise TransformError
         
