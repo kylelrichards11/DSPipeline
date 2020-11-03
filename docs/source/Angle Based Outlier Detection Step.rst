@@ -13,13 +13,13 @@ Uses angle based outlier detection to detect and remove outliers. Uses pyod's AB
 Parameters
 ----------
 
-+----------------+----------+----------------------------------------+
-| **Parameter**  | **Type** | **Description**                        |
-+================+==========+========================================+
-| num_remove     | *int*    | Number of detected outliers to remove  |
-+----------------+----------+----------------------------------------+
-| select_kwargs  | *dict*   | Arguments to pass to pyod's ABOD class |
-+----------------+----------+----------------------------------------+
++---------------+----------+----------------------------------------+
+| **Parameter** | **Type** | **Description**                        |
++===============+==========+========================================+
+| num_remove    | *int*    | Number of detected outliers to remove  |
++---------------+----------+----------------------------------------+
+| kwargs        | *dict*   | Arguments to pass to pyod's ABOD class |
++---------------+----------+----------------------------------------+
 
 
 Methods
