@@ -1,6 +1,6 @@
 coverage==4.5.4
 imbalanced-learn==0.5.0
-numpy==1.17.3
+numpy==1.22.0
 pandas==0.25.2
 pyod==0.7.5
 scikit-learn==0.21.3
