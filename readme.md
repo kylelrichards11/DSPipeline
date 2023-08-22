@@ -46,7 +46,7 @@ scale_step = StandardScalerStep()
 abod_step = ABODStep(num_remove=5, kwargs={'contamination':0.05})
 corr_step = PearsonCorrStep(num_features=0.25)
 
-# Make Pipeline
+# Make pipeline
 pipeline_steps = [scale_step, abod_step, corr_step]
 pipeline = Pipeline(pipeline_steps)
 
